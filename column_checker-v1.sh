@@ -32,7 +32,16 @@ elif [[ "$minOR" == 0 && "$minBETA" == 0 ]]; then
 elif [[  "$minOR" == 1 && "$minBETA" == 0 ]]; then
 	echo "$f lacks BETA but has OR. BETA should be calculated"
 	# Insert the following code when appropriate
-	# zcat $f | awk 'BEGIN{FS="\t";OFS="\t"} {print $0,log($9)}' | sed '1s/-inf/BETA/' > DUMMYFILENAME
+	#	ORCOL=`zcat $f | awk -F'\t' '
+	#	{
+	#  		for(i=1;i<=NF;i++) {
+	#    		if($i == "OR")
+	#      		printf(i)
+	#  		}
+	#  		exit 0
+	#	}
+	#	'`
+	# zcat $f | awk -v orcol="$ORCOL" 'BEGIN{FS="\t";OFS="\t"} {print $0,log($orcol)}' | sed '1s/-inf/BETA/' > DUMMYFILENAME
 fi
 
 done

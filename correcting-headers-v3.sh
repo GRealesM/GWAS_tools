@@ -15,7 +15,7 @@ do
 # Caution! Sometimes "other_allele" means effect allele, check papers prior to run the script, and pre-rename accordingly.
 	gsub(/\<Beta\>|\<beta\>|\<Effect\>|\<effect\>|\<EFFECT\>|\<sebeta_SNP_add\>|\<EFFECT_ALT\>/,"BETA");\
 	gsub(/\<Pos\>|\<base_pair_location\>|\<BP\>|\<BP\(hg19\)\>|\<Position\>|\<POS\>|\<pos\>|\<Chr_Position\>|\<bp\>|\<position\>|\<Position\(hg19\)\>|\<POSITION\>|\<bp_hg19\>|\<Coordinate\>|\<chrloc\>/,"BP");\
-	gsub(/\<Chr\>|chromosome\>|\<Chromosome\>|\<chr\>|\<Chr_ID\>|\<hg18chr\>|CHROMOSOME\>/,"CHR");\
+	gsub(/\<Chr\>|\<chromosome\>|\<Chromosome\>|\<chr\>|\<Chr_ID\>|\<hg18chr\>|\<CHROMOSOME\>/,"CHR");\
 	gsub(/\<EMP_Beta\>/,"EMP_BETA");\
 	gsub(/\<EMP1\>/,"EMP_P");\
 	gsub(/\<EMP_se\>/,"EMP_SE");\
