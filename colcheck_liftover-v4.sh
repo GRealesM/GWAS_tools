@@ -11,7 +11,7 @@
 
 shopt -s nullglob
 files=(*.tsv.gz)
-#files=(ALR_Ishigaki_doi101101795948_1-hc.tsv.gz)
+#files=(MDD_Wray_29700475_1-hc.tsv.gz)
 
 awk 'BEGIN{FS=OFS="\t"} NR>1 {print $1}' Manifest_build_translator.tsv > rs_manifest.txt
 awk 'BEGIN{FS="\t";OFS=":"} NR>1 {print $2,$3}' Manifest_build_translator.tsv > hg18_manifest.txt
@@ -100,7 +100,7 @@ SNPIDCOL=`cat tmp_file_betachecked.tsv | awk -F'\t' '
 # Extract relevant columns for target file, and create a BED file containing them. This will be the file fed to the liftover script 
 echo "Preparing input for liftover."
 
-cat tmp_file_betachecked.tsv | awk  -v snpidcol="$SNPIDCOL" -v chrcol="$CHRCOL" -v bpcol="$BPCOL" 'BEGIN{FS="\t";OFS="\t"}{print "chr"$chrcol, $bpcol, (($bpcol + 1)), $snpidcol }' | tail -n+2 > ${FILEBASENAME}.bed
+cat tmp_file_betachecked.tsv | awk  -v snpidcol="$SNPIDCOL" -v chrcol="$CHRCOL" -v bpcol="$BPCOL" 'BEGIN{FS=OFS="\t"}{print "chr"$chrcol, $bpcol, (($bpcol + 1)), $snpidcol }' | tail -n+2 > ${FILEBASENAME}.bed
 
 # In addition, we'll need to edit the file to make it "mergeable", since merge command will naturally try to merge using the first column in each file. We'll guarantee that the first column in both files to be SNPID.
 cp tmp_file_betachecked.tsv tmp_formerging0.tsv
@@ -116,20 +116,12 @@ fi
 # Check build
 echo Checking build 
 
-# First we'll check if the file is an harmonized file, in which case we'll skip the harmonizing step
-harmonized=( $(grep -c "\<hm_CHR\>" tempcolcheck.txt))
-if [[ $harmonized -gt 0 ]]; then
-	echo "Seems that $f is an harmonized file already, I will skip liftover in this file"
-	gzip < tmp_file_betachecked.tsv  > ../04-Liftovered/${FILENAMEBASE}-hg38.tsv.gz
-	continue
-fi
-
 # In general, we'll use rsids as a proxy to identify. If those aren't available we'll need to figure out which build is by using positions
 
-n_rs=( $(awk -v snpidcol="$SNPIDCOL" 'BEGIN{FS=OFS="\t"}NR>1{print $snpidcol}' tmp_file_betachecked.tsv | grep -c rs))
+n_rs=( $(awk -v snpidcol="$SNPIDCOL" 'BEGIN{FS=OFS="\t"}NR>1{print $snpidcol}' tmp_file_betachecked.tsv | grep -cP "[\n\t]rs[0-9]+[\n\t]"))
 
-if [[ "$n_rs" == 0 ]]; then
-	echo "Couldn't identify valid rsids (eg. rs429358) in $f. Trying to compare positions instead"
+if [[ "$n_rs" -eq 0 ]]; then
+	echo "Couldn't identify valid rsids (eg. rs429358) in $f. Trying to compare positions instead."
 	awk -v chrcol="$CHRCOL" -v bpcol="$BPCOL" 'BEGIN{FS="\t";OFS=":"}NR>1{ print $chrcol, $bpcol}' tmp_file_betachecked.tsv > tmp_file_chrbp.tsv
 	matches18=( $(grep -wf hg18_manifest.txt -c tmp_file_chrbp.tsv))
 	matches19=( $(grep -wf hg19_manifest.txt -c tmp_file_chrbp.tsv))
@@ -140,6 +132,7 @@ if [[ "$n_rs" == 0 ]]; then
 		CHOSEN_BUILD=5
 	else 	CHOSEN_BUILD=3
 	fi
+	echo "$f had $matches18 with hg18 build, $matches19 with hg19, and $matches38 with hg38."
 	rm tmp_file_chrbp.tsv
 else 
 	cat tmp_file_betachecked.tsv | grep -wf rs_manifest.txt | awk -v bpcol="$BPCOL" -v snpidcol="$SNPIDCOL" 'BEGIN{FS="\t";OFS="\t"} {print $snpidcol, $bpcol}' > tmp_rsmatchedfile.txt
@@ -170,7 +163,7 @@ elif [ $CHOSEN_BUILD -eq 5 ]; then
 	liftOver ${FILEBASENAME}.bed hg19ToHg38.over.chain.gz ${FILEBASENAME}-lo-output.bed ${FILEBASENAME}-unlifted.bed
 elif [ $CHOSEN_BUILD -eq 7 ]; then
 	echo $f is in hg38 already, skipping liftover step...
-	gzip < tmp_file_betachecked.tsv  > ../04-Liftovered/${FILENAMEBASE}-hg38.tsv.gz
+	gzip < tmp_file_betachecked.tsv  > ../04-Liftovered/${FILEBASENAME}-hg38.tsv.gz
 	continue # Remove/rethink this break when the whole pipeline is a single loop and there are more steps afterwards.
 else
 	echo Sorry, something wrong happened at the build selection stage and I could not identify the build for $f.
@@ -179,10 +172,10 @@ else
 fi
 
 awk 'BEGIN{FS="\t";OFS="\t"}{print $4,$1,$2}' ${FILEBASENAME}-lo-output.bed | sed 's/chr//' | sed '1i SNPID\tCHR38\tBP38' > ${FILEBASENAME}-lo-output2.bed
-join -a2 -e'NA' -t $'\t' --nocheck-order -o auto ${FILEBASENAME}-lo-output2.bed tmp_formerging1.tsv | gzip  > ../04-Liftovered/${FILEBASENAME}-hg38.tsv
+join -a2 -e'NA' -t $'\t' --nocheck-order -o auto ${FILEBASENAME}-lo-output2.bed tmp_formerging1.tsv | gzip  > ../04-Liftovered/${FILEBASENAME}-hg38.tsv.gz
 echo $f suscessfully lifted over to hg38 build!
 
-rm  tmp_formerging1.tsv *bed tempcolcheck.txt tmp_file_betachecked.tsv
+ rm  tmp_formerging1.tsv *bed tempcolcheck.txt tmp_file_betachecked.tsv
 
 done
-rm rs_manifest.txt hg18_manifest.txt hg19_manifest.txt hg38_manifest.txt
+ rm rs_manifest.txt hg18_manifest.txt hg19_manifest.txt hg38_manifest.txt
