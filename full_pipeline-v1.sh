@@ -93,7 +93,7 @@ do
  else 
  	echo Separator seems to be semicolons. Replacing...
  	zcat $f | sed -e 's/^;*//' -e 's/;*$//' -e 's/;/\t/g' -e '1s/ /_/g' > tmp_fs_file.tsv
-
+ fi
 
 ####################
 ## REHEADING STAGE
@@ -133,7 +133,7 @@ do
 #chrbp_together=$(head tmp_reheaded_file | grep "CHR:BP" -c tmp_reheaded_file)
 #
 #if [[ $chrbp_together -gt 0 ]]; then
-#	chrbp=`awk -F'\t' '
+#	chrbp=$(awk -F'\t' '
 #		{
 #	  		for(i=1;i<=NF;i++) {
 #	    		if($i == "CHR:BP")
@@ -141,7 +141,7 @@ do
 #	  		}
 #	  		exit 0
 #		}
-#		' tmp_reheaded_file.tsv`
+#		' tmp_reheaded_file.tsv)
 #	awk -v chrbpcol="$ORCOL" 'BEGIN{FS=OFS="\t"} {print $0,log($orcol)}' tmp_reheaded_file.tsv | sed '1s/-inf/BETA/' > tmp_betachecked_file.tsv
 
  rm tmp_fs_file.tsv
@@ -158,14 +158,14 @@ do
  head tmp_reheaded_file.tsv -n1 > tempcolcheck.txt
  
  # Totally essential. Must be in every file
- minCHR=`grep -c "\<CHR\>\|\<hm_CHR\>" tempcolcheck.txt`
- minBP=`grep -c "\<BP\>\|\<hm_BP\>" tempcolcheck.txt`
- minSNPID=`grep -c "\<SNPID\>\|\<hm_SNPID\>" tempcolcheck.txt`
- minREF=`grep -c "\<REF\>\|\<hm_REF\>" tempcolcheck.txt`
- minALT=`grep -c "\<ALT\>\|\<hm_ALT\>" tempcolcheck.txt`
- minP=`grep -c "\<P\>\|\<hm_P\>\|\<EMP_P\>\|\<SE\>\|\<EMP_SE\>\|\<LOG10P\>\|\<-LOG10P\>\|" tempcolcheck.txt`
- minOR=`grep -c "\<OR\>\|\<hm_OR\>" tempcolcheck.txt`
- minBETA=`grep -c "\<hm_BETA\>\|\<BETA\>\|\<EMP_BETA\>" tempcolcheck.txt`
+ minCHR=$(grep -c "\<CHR\>\|\<hm_CHR\>" tempcolcheck.txt)
+ minBP=$(grep -c "\<BP\>\|\<hm_BP\>" tempcolcheck.txt)
+ minSNPID=$(grep -c "\<SNPID\>\|\<hm_SNPID\>" tempcolcheck.txt)
+ minREF=$(grep -c "\<REF\>\|\<hm_REF\>" tempcolcheck.txt)
+ minALT=$(grep -c "\<ALT\>\|\<hm_ALT\>" tempcolcheck.txt)
+ minP=$(grep -c "\<P\>\|\<hm_P\>\|\<EMP_P\>\|\<SE\>\|\<EMP_SE\>\|\<LOG10P\>\|\<-LOG10P\>\|" tempcolcheck.txt)
+ minOR=$(grep -c "\<OR\>\|\<hm_OR\>" tempcolcheck.txt)
+ minBETA=$(grep -c "\<hm_BETA\>\|\<BETA\>\|\<EMP_BETA\>" tempcolcheck.txt)
  
  if [[ "$minCHR" == 0 || "$minBP" == 0 ]]; then
  	echo $f seem to lack CHR/BP coordinates. These are essential. Please check your file.
@@ -189,7 +189,7 @@ do
  	continue
  elif [[  "$minOR" == 1 && "$minBETA" == 0 ]]; then
  	echo $f lacks BETA but has OR. BETA will be calculated 
- 	ORCOL=`awk -F'\t' '
+ 	ORCOL=$(awk -F'\t' '
  		{
  	  		for(i=1;i<=NF;i++) {
  	    		if($i == "OR")
@@ -197,7 +197,7 @@ do
  	  		}
  	  		exit 0
  		}
- 		' tmp_reheaded_file.tsv`
+ 		' tmp_reheaded_file.tsv)
  	awk -v orcol="$ORCOL" 'BEGIN{FS="\t";OFS="\t"} {print $0,log($orcol)}' tmp_reheaded_file.tsv | sed '1s/-inf/BETA/' > tmp_betachecked_file.tsv
  else
  	echo $f has all required columns. Excellent!
@@ -208,7 +208,7 @@ do
 ## LIFTOVER STAGE
 ###################
 
- CHRCOL=`awk -F'\t' '
+ CHRCOL=$(awk -F'\t' '
  {
    for(i=1;i<=NF;i++) {
      if($i == "CHR")
@@ -216,8 +216,8 @@ do
    }
    exit 0
  }
- ' tmp_betachecked_file.tsv`
- BPCOL=`awk -F'\t' '
+ ' tmp_betachecked_file.tsv)
+ BPCOL=$(awk -F'\t' '
  {
    for(i=1;i<=NF;i++) {
      if($i == "BP")
@@ -225,8 +225,8 @@ do
    }
    exit 0
  }
- ' tmp_betachecked_file.tsv`
- SNPIDCOL=`awk -F'\t' '
+ ' tmp_betachecked_file.tsv)
+ SNPIDCOL=$(awk -F'\t' '
  {
    for(i=1;i<=NF;i++) {
      if($i == "SNPID")
@@ -234,7 +234,7 @@ do
    }
    exit 0
  }
- ' tmp_betachecked_file.tsv`
+ ' tmp_betachecked_file.tsv)
 
 # Prepare input for liftover
 # Extract relevant columns for target file, and create a BED file containing them. This will be the file fed to the liftover script 
@@ -313,7 +313,7 @@ do
  join -a2 -e'NA' -t $'\t' --nocheck-order -o auto ${FILEBASENAME}-lo-output2.bed tmp_formerging1.tsv | gzip  > ${FILEBASENAME}-hg38.tsv.gz
  echo $f suscessfully lifted over to hg38 build!
  
- rm  tmp_formerging1.tsv *bed tempcolcheck.txt tmp_betachecked_file.tsv
+ rm  tmp_formerging1.tsv *.bed tempcolcheck.txt tmp_betachecked_file.tsv
 
 
 
