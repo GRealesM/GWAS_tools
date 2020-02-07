@@ -236,9 +236,12 @@ do
 # Extract relevant columns for target file, and create a BED file containing them. This will be the file fed to the liftover script 
  echo Preparing input for liftover...
 
-# One annoying thing that we should take care of is the fact that in some files the X chromosome will be encoded as 23. Apparently the almighty liftOver executable is not very happy with this notation, so we'll need to add a little workaround
- awk -v chrcol="$CHRCOL" 'BEGIN{FS=OFS="\t"}{if ($chrcol) sub(/23/,"X",$chrcol); print}' tmp_betachecked_file.tsv > tmp_Xchrchecked_file.tsv
- mv tmp_Xchrchecked_file.tsv tmp_betachecked_file.tsv
+# A couple annoying things that we should take care of are
+# (1) In some files the X chromosome will be encoded as 23. Apparently the almighty liftOver executable is not very happy with this notation
+# (2) Likewise, in some files, BP are expressed as scientific notation, which also makes liftOver cringe in disgust.
+# so we'll need to add a little workaround
+ awk -v chrcol="$CHRCOL" -v bpcol="$BPCOL" 'BEGIN{FS=OFS="\t"}{sub(/23/,"X",$chrcol)}NR>1{$bpcol=sprintf("%i", $bpcol)}1' tmp_betachecked_file.tsv > tmp_Xchrandbpchecked_file.tsv 
+ mv tmp_Xchrandbpchecked_file.tsv tmp_betachecked_file.tsv
  
  cat tmp_betachecked_file.tsv | awk  -v snpidcol="$SNPIDCOL" -v chrcol="$CHRCOL" -v bpcol="$BPCOL" 'BEGIN{FS=OFS="\t"}{print "chr"$chrcol, $bpcol, (($bpcol + 1)), $snpidcol }' | tail -n+2 > ${FILEBASENAME}.bed
 
@@ -310,12 +313,11 @@ do
  	continue 
  fi
  
- awk 'BEGIN{FS="\t";OFS="\t"}{print $4,$1,$2}' ${FILEBASENAME}-lo-output.bed | sed 's/chr//' | sed '1i SNPID\tCHR38\tBP38' > ${FILEBASENAME}-lo-output2.bed
+ awk 'BEGIN{FS=OFS="\t"}{sub("chr", "",$1); print $4,$1,$2}' ${FILEBASENAME}-lo-output.bed | sed '1i SNPID\tCHR38\tBP38' > ${FILEBASENAME}-lo-output2.bed
  join -a2 -e'NA' -t $'\t' --nocheck-order -o auto ${FILEBASENAME}-lo-output2.bed tmp_formerging1.tsv | gzip  > ${FILEBASENAME}-hg38.tsv.gz
  echo $f suscessfully lifted over to hg38 build!
  
-# TEMP REMOVAL FOR DEBUGGING
-# rm  tmp_formerging1.tsv *.bed tempcolcheck.txt tmp_betachecked_file.tsv tmp_reheaded_file.tsv
+ rm  tmp_formerging1.tsv *.bed tempcolcheck.txt tmp_betachecked_file.tsv tmp_reheaded_file.tsv
 
 
 
