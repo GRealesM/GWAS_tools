@@ -108,7 +108,7 @@ do
  # Caution! Sometimes "other_allele" means effect allele, check papers prior to run the script, and pre-rename accordingly.
  	gsub(/\<Beta\>|\<beta\>|\<Effect\>|\<effect\>|\<EFFECT\>|\<sebeta_SNP_add\>|\<EFFECT_ALT\>/,"BETA");
  	gsub(/\<Pos\>|\<base_pair_location\>|\<BP\>|\<BP\(hg19\)\>|\<Position\>|\<POS\>|\<pos\>|\<Chr_Position\>|\<bp\>|\<position\>|\<Position\(hg19\)\>|\<POSITION\>|\<bp_hg19\>|\<Coordinate\>|\<chrloc\>/,"BP");
- 	gsub(/\<Chr\>|\<chromosome\>|\<Chromosome\>|\<chr\>|\<Chr_ID\>|\<hg18chr\>|\<CHROMOSOME\>/,"CHR");
+ 	gsub(/\<Chr\>|\<chromosome\>|\<Chromosome\>|\<chr\>|\<Chr_ID\>|\<hg18chr\>|\<CHROMOSOME\>|\<chrom\>/,"CHR");
  	gsub(/\<EMP_Beta\>/,"EMP_BETA");
  	gsub(/\<EMP1\>/,"EMP_P");
  	gsub(/\<EMP_se\>/,"EMP_SE");
@@ -376,7 +376,7 @@ echo Column sanity check OK.
  	liftOver "${FILEBASENAME}".bed hg19ToHg38.over.chain.gz "${FILEBASENAME}"-lo-output.bed "${FILEBASENAME}"-unlifted.bed
  elif [ $CHOSEN_BUILD -eq 7 ]; then
  	echo "$f" is in hg38 already, skipping liftover step...
- 	gzip < tmp_betachecked_file.tsv  > "${FILEBASENAME}"-hg38.tsv.gz
+ 	gzip < tmp_schecked.tsv  > "${FILEBASENAME}"-hg38.tsv.gz
  	continue # Remove/rethink this break when the whole pipeline is a single loop and there are more steps afterwards.
  else
  	echo Sorry, something wrong happened at the build selection stage and I could not identify the build for "$f".
@@ -388,7 +388,7 @@ echo Column sanity check OK.
  join -a2 -e'NA' -t $'\t' --nocheck-order -o auto "${FILEBASENAME}"-lo-output2.bed tmp_formerging1.tsv | gzip  > "${FILEBASENAME}"-hg38.tsv.gz
  echo "$f" suscessfully lifted over to hg38 build!
  
- rm  tmp_formerging1.tsv *.bed tempcolcheck.txt tmp_schecked.tsv
+# rm  tmp_formerging1.tsv tempcolcheck.txt tmp_schecked.tsv
 
 
 
