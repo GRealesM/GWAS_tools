@@ -404,4 +404,28 @@ CHC -> MCHC (Mean Corpuscular Hemoglobin Concentration)
 MCH -> MCH (Mean Corpuscular Hemoglobin). No change.
 
 
+- VIT_Jin_27723757_1-hg38.tsv.gz
 
+Last Reviewed: 2020-02-21
+
+I had to reprocess this file because I realized that column order was different in Chr1 than in the rest.
+
+cp ../97-Archive/VIT_Jin_27723757_1.tsv.gz ./
+zcat VIT_Jin_27723757_1.tsv.gz | awk 'BEGIN{FS=OFS="\t"}NR<653613{print $1, $2, $3, $4, $6, $5, $7, $8, $9, $10, $11, $12}NR>=653613{print $0}' | sed -e '1s/MAF/REF/' -e '1s/A1/ALT/' -e '1s/A2/MAF/' -e 's/RS/rs/' > VIT_Jin_27723757_1.tsv
+gzip VIT_Jin_27723757_1.tsv
+
+And reprocessed the file
+I took the chance to make some improvements in pipeline, and created v4.1.
+
+
+- IGAN_Kiryluk_25305756_1.tsv.gz
+
+This trait is one of those used to create the basis. But its projection didn't match those of the original (IgA_Neph). 
+Investigating the original file I realized that there are two allele columns (Ref and Alt, and Allele1 and Allele2), but Beta makes reference to Allele1, and since some alleles in the Ref Alt columns, which I used for my projections were flipped, I got many wrongly oriented betas.
+Thus, I reprocessed the file, removing these troublesome columns.
+
+cp ../97-Archive/IAN_Kiryluk_25305756_1.tsv.gz ./
+mv IAN_Kiryluk_25305756_1.tsv.gz IGAN_Kiryluk_25305756_1.tsv.gz
+zcat IGAN_Kiryluk_25305756_1.tsv.gz | cut -d$'\t' -f1-2,4,7- | sed -e '1s/Allele1/ALT/' -e 's/Allele2/REF/' | gzip > tmp.tsv.gz && mv tmp.tsv.gz IGAN_Kiryluk_25305756_1.tsv.gz
+
+And reprocessed with v4.1
