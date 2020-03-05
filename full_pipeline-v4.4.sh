@@ -271,7 +271,7 @@ if [[ "$minBETA" == 0 && 1 -eq $(echo  "$NABETA > $maxNA" | bc -l) ]]; then
 		echo BETA column seems to have more NAs than what is acceptable, and there is no OR column to recalculate it from. Please check your file.
 		echo Continuing with next file...
 		continue
-	else if [[ "$minOR" == 1 ]]; then
+	elif [[ "$minOR" == 1 ]]; then
 		NAOR=$(echo "scale=2;$(awk -v orcol="$ORCOL" 'BEGIN{FS=OFS="\t"}NR>1{print $orcol}' tmp_schecked.tsv | grep -c NA) / ($(cat tmp_schecked.tsv | wc -l)-1)" | bc)
 		if [[ 1 -eq $(echo  "$NAOR > $maxNA" | bc -l) ]]; then
 			echo BETA and OR both have more NAs that is acceptable. Please check your file.
