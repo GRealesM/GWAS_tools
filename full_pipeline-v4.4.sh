@@ -108,7 +108,7 @@ do
  # Caution! Sometimes "other_allele" means effect allele, check papers prior to run the script, and pre-rename accordingly.
  	gsub(/\<Beta\>|\<beta\>|\<Effect\>|\<effect\>|\<EFFECT\>|\<beta_SNP_add\>|\<EFFECT_ALT\>/,"BETA");
  	gsub(/\<Pos\>|\<base_pair_location\>|\<BP\>|\<BP\(hg19\)\>|\<Position\>|\<POS\>|\<pos\>|\<Chr_Position\>|\<bp\>|\<position\>|\<Position\(hg19\)\>|\<POSITION\>|\<bp_hg19\>|\<Coordinate\>|\<chrloc\>/,"BP");
- 	gsub(/\<Chr\>|\<chromosome\>|\<Chromosome\>|\<chr\>|\<Chr_ID\>|\<hg18chr\>|\<CHROMOSOME\>|#chrom\>|#CHROM\><chrom\>/,"CHR");
+ 	gsub(/\<Chr\>|\<chromosome\>|\<Chromosome\>|\<chr\>|\<Chr_ID\>|\<hg18chr\>|\<CHROMOSOME\>|#chrom\>|#CHROM\>|\<chrom\>/,"CHR");
  	gsub(/\<EMP_Beta\>/,"EMP_BETA");
  	gsub(/\<EMP1\>/,"EMP_P");
  	gsub(/\<EMP_se\>/,"EMP_SE");
@@ -124,7 +124,7 @@ do
  	gsub(/\<p_value\>|\<P.value\>|\<pvalue\>|\<P-value\>|\<pval\>|\<p.value\>|\<Pval\>|\<PVALUE\>|\<Pvalue\>|\<P_VALUE\>|\<P-val\>|\<p\>|\<All.p.value\>|\<P_value\>|\<p-value\>|\<GC-adjusted_P_\>/,"P");
  	gsub(/\<standard_error\>|\<StdErr\>|\<stderr\>|\<sebeta_SNP_add\>|\<se\>|\<STDERR\>|\<sebeta\>/,"SE");
  	gsub(/\<Rsq\>/,"RSQ");
- 	gsub(/\<íd\>|\<id\>|\<variant_id\>|\<MarkerName\>|\<SNP\>|\<rsid\>|\<rsids\>|\<SNP_Name\>|\<snp\>|\<snpid\>|\<SNP_ID\>|\<rsID\>|#SNPID\>|\<rs_number\>|\<RSID\>|\<rs\>|\<db_SNP_RS_ID\/Marker\>|\<dbSNP_RS_ID\>/,"SNPID");
+ 	gsub(/\<íd\>|\<id\>|\<ID\>|\<variant_id\>|\<MarkerName\>|\<SNP\>|\<rsid\>|\<rsids\>|\<SNP_Name\>|\<snp\>|\<snpid\>|\<SNP_ID\>|\<rsID\>|#SNPID\>|\<rs_number\>|\<RSID\>|\<rs\>|\<db_SNP_RS_ID\/Marker\>|\<dbSNP_RS_ID\>/,"SNPID");
  	gsub(/\<MARKER\>|\<íd\>|\<Chr\:Position\>/,"CHR:BP");
 	gsub(/\<Zscore\>|\<ZSCORE\>/,"Z");print}' > tmp_reheaded_file.tsv
  	tail -n+2 tmp_fs_file.tsv >> tmp_reheaded_file.tsv
