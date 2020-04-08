@@ -12,3 +12,7 @@ From v4 on I started logging changes across versions, just in case.
 
 * Dictionary improved with more terms.
 * Pipeline now checks if BETA has more than 50% of SNPs as "NA", and recalculates from OR if it exists and has <50% NA.
+
+**v4.5**
+
+* I included a step in the final step (join, recompress, and save) to check and remove duplicated lines in the file. Because of the join command, some lines were systematically duplicated. This didn't have a huge effect on subsequent steps, but added innecessary lines.
