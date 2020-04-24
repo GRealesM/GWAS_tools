@@ -22,3 +22,8 @@ From v4 on I started logging changes across versions, just in case.
 * SNPID is necessary for liftover step, but it's not absolutely required for it to contain the corresponding rs, so instead of throwing an error and jumping to next file when SNPID column is missing, it creates a new one from CHR and BP columns, with the CHR_BP format. 
 * Temporarily included A1 => REF and A2 => ALT to process Hoglund files.
 * Added new keys to the dictionary corresponding to Hoglund keys (eg. effB for BETA and se_effB for SE).
+
+**v4.7**
+
+* Fixed a bug that prevented cleaning-up of files when file is in hg38 build.
+

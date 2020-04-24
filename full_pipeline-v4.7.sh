@@ -415,6 +415,7 @@ echo Column sanity check OK.
  elif [ $CHOSEN_BUILD -eq 7 ]; then
  	echo "$f" is in hg38 already, skipping liftover step...
  	sed -e '1s/\<CHR\>/CHR38/' -e '1s/\<BP\>/BP38/' tmp_schecked.tsv | gzip  > "${FILEBASENAME}"-hg38.tsv.gz
+	rm  tmp_formerging1.tsv tempcolcheck.txt tmp_schecked.tsv *.bed
  	continue # Remove/rethink this break when the whole pipeline is a single loop and there are more steps afterwards.
  else
  	echo Sorry, something wrong happened at the build selection stage and I could not identify the build for "$f".
@@ -433,5 +434,6 @@ echo Column sanity check OK.
  rm  tmp_formerging1.tsv tempcolcheck.txt tmp_schecked.tsv *.bed
 
 done
+
 rm rs_manifest.txt hg18_manifest.txt hg19_manifest.txt hg38_manifest.txt
 
