@@ -1,7 +1,9 @@
-# GWAS_Sumstats_Pipeline
-Pipeline for GWAS summary statistic dataset processing 
+# GWAS_tools
 
-From v4 on I started logging changes across versions, just in case.
+In this repository I put all useful scripts that I wrote for processing and projecting GWAS summary statistic datasets onto our multidimensional bases.
+
+Among them, I created a pipeline for initial processing of raw summary statistic datasets. Which changes among versions I log here (from v4 onwards). 
+
 
 **v4.1** 
 
