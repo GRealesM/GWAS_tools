@@ -29,3 +29,6 @@ Among them, I created a pipeline for initial processing of raw summary statistic
 
 * Fixed a bug that prevented cleaning-up of files when file is in hg38 build.
 
+**v4.8**
+
+* Included some terms in the dictionary to correctly process COVID-19 HGI datasets.
