@@ -1,0 +1,43 @@
+### CYTOKINE LEVELS META-ANALYSIS
+### Start date : 2020-05-05
+
+Background: We're interested in projecting cytokine level traits onto our existing basis, including a cytokine one. 
+However, after building our first cytokine basis using data from Ahola-Olli et al. (2016), we realised that the intensity of the genetic signal observed was a bit low, which may be explained by a lack of power due to low sample size in that study. To gain power we decided to pool this data with those of other two cytokine levels study (Enroth et al., 2014, and Höglund et al., 2020). 
+
+
+Data collection: We considered previously processed and QC'd summary statistics datasets from all three studies, namely Ahola-Olli (41 datasets), Enroth (14), and Höglund (117, including technical replicates). Noteworthy, both Enroth and Höglund were performed using the same individuals, from two cities in the parish of Karesuando (Sweden), within the framework of the Northern Sweden Population Health Study (NSPHS).
+For our meta-analysis we'll consider only traits with datasets in more than one study, and given the fact that Enroth and Höglund were performed in the same populations, only traits with datasets in Ahola-Olli and either Enroth or Höglund. Höglund has traits with duplicated datasets, which come from the same populations sampled at different timepoints. The study doesn't provide exact sample sizes, but the median sample size is bigger for ONC_CVD panel (929, here coded as '2') thatn for INF (871, coded as '1') so Höglund files coded as 2 were given preference. There is one case (IP10) with data in all three studies, in which case we give preference to Enroth dataset due to its bigger sample size (970).
+
+NOTE: In our original naming scheme, Hoglund traits for INF were assigned 1, and ONC_CVD were assigned 2, given that they're mostly replicates. However there was a single trait (TRAIL) that was measured only on ONC_CVD panel, and was given 1. This is no problem for file selection, since there's no INF TRAIL, but bear in mind that it's the only case in which a Hoglund_1 file comes actually from ONC_CVD.
+
+
+# We first extracted the traits with more than one dataset, excluding Hoglund duplicates
+ls -1 ../02-Processed/ | grep "Ahola\|Enroth\|Hoglund" | cut -d_ -f1,2 | sort | uniq | cut -d_ -f 1 | sort | uniq -c | sort -rh | grep "2 \|3 " | awk '{print $2"_"}' > initial_trait_patterns.txt
+
+# We copied all the files with those patterns to our folder (see copying_files.sh), then I removed redundant or unnecessary files:
+rm CXCL5_Hoglund_31727947_1-hg38.tsv.gz GROA_Hoglund_31727947_1-hg38.tsv.gz HGF_Hoglund_31727947_1-hg38.tsv.gz IL18_Hoglund_31727947_1-hg38.tsv.gz IL6_Hoglund_31727947_1-hg38.tsv.gz IL8_Hoglund_31727947_1-hg38.tsv.gz IP10_Hoglund_31727947_* MCP1_Hoglund_31727947_1-hg38.tsv.gz MCSF_Hoglund_31727947_1-hg38.tsv.gz MIG_Hoglund_31727947_1-hg38.tsv.gz MIP1A_Hoglund_31727947_1-hg38.tsv.gz MIP1B_Hoglund_31727947_1-hg38.tsv.gz SCF_Hoglund_31727947_1-hg38.tsv.gz
+# In addition, there are some traits with datasets from Enroth and Hoglund only, so we remove them.
+rm CCL19_* CXCL5_*
+
+After this step, we have 50 files comprising 25 traits.
+
+
+Update - 2020-05-21
+
+We performed the meta-analysis and generated manhattan plots for them. Now we'll select datasets and traits for the new basis, following these criteria:
+
+- If no significant hit in meta-analysis, discard the trait.
+- If there were no meta-analysis because we had only one dataset, use that dataset
+- If there were no meta-analysis because we had two datasets from the same populations, use the one with the largest sample size.
+
+
+For that we'll extract again the trait patterns, and we'll create a decision spreadsheet, based on the above criteria
+
+ls -1 ../02-Processed/ | grep "Ahola\|Enroth\|Hoglund" | cut -d_ -f1 | sort | uniq
+
+After this step, and for basis creation purposes, I created a script to check which non-meta files don't have a single significant SNPs, and posteriorly remove them(atleast1sigSNP.sh, in metacyto_basis/basis_building/Filtered_datasets).
+
+
+
+
+
