@@ -32,3 +32,12 @@ Among them, I created a pipeline for initial processing of raw summary statistic
 **v4.8**
 
 * Included some terms in the dictionary to correctly process COVID-19 HGI datasets.
+
+**v4.9**
+
+* Included some terms in the dictionary to correctly process COVID-19 Rivas datasets.
+* Removed A1 and A2, included for specific purposes, from the dictionary.
+* Now once original build is identified, column names change to reflect it (eg. CHR/BP -> CHR19/BP19), rather than leave them untouched, as it did before.
+
+
+
