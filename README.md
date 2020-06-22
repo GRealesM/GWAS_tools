@@ -39,5 +39,7 @@ Among them, I created a pipeline for initial processing of raw summary statistic
 * Removed A1 and A2, included for specific purposes, from the dictionary.
 * Now once original build is identified, column names change to reflect it (eg. CHR/BP -> CHR19/BP19), rather than leave them untouched, as it did before.
 
+**v4.10**
 
+* New way to extract file base names, since now some of our datasets include dots in the trait name.
 
