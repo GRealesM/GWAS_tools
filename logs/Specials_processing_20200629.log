@@ -529,9 +529,14 @@ After that, I replaced ALLELE1 by ALT, and ALLELE0 by REF, and reprocessed the f
 
 - T2D_Scott_28566273_1
 
-Last Reviewed: 2020-03-16
+Last Reviewed: 2020-06-29
 
 This file had the issue of not having SNPIDs. Since we don't *need* ids to process the file, we'll separate the CHR and POS, and keep the CHRPOS column as SNPID. I used Fix_T2D_Scott_20566237.R for that.
+
+UPDATE: I wasn't satisfied with the performance of the pipeline at the post-liftover merge. I used T2D_Scott as a test file, and I managed to improve it with less information loss (all rows kept, only NA in CHR38 and BP38 that failed to liftover). These changes were implemented in pipeline v5.0.
+I updated de file in 02-Processed.
+
+
 
 - SSC_LopezIsac_31672989
 
@@ -653,7 +658,8 @@ New denomination: RETC (Reticulocyte count)
 Last Reviewed: 2020-06-19
 
 These 4 files contained data for multiple cytokines, as well as one-allele-only problem.
-I wrote a script to first split them by cytokine (see 93-Fixing_stuff/Special_cases/...Traglia..), and them went through the cytokine names to check for the need to generate new traits in our dictionary or just rename. I  To make things easier, I renamed any cytokine that had an existing trait already in our dictionary (see names and equivalents in tableS2 in the paper).
-
+I wrote a script to first split them by cytokine (see 93-Fixing_stuff/Special_cases/...Traglia..), and them went through the cytokine names to check for the need to generate new traits in our dictionary or just rename the files. I  To make things easier, I renamed any cytokine that had an existing trait already in our dictionary (see names and equivalents in tableS2 in the paper).
+These files also had the one-allele-problem, and only the effect allele was reported. To solve this I wrote a script (see 93-Fix_stuff/one-allele) and processed all files. 
+Once I did this, I pipelined the files using v4.10.
 
 

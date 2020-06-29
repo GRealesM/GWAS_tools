@@ -43,3 +43,7 @@ Among them, I created a pipeline for initial processing of raw summary statistic
 
 * New way to extract file base names, since now some of our datasets include dots in the trait name.
 
+**v5.0**
+
+* New post-liftover merging method, using awk instead of join. This result in seamless merge, keeping all original rows, using NA for missing hg38 coordinates, but without loss of rows due to faulty match, as it happened with the previous version.
+
