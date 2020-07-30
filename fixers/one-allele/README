@@ -1,0 +1,18 @@
+###################################
+#### Fixing one-allele problem ####
+###################################
+
+Some files come with one allele only (usually, the effect allele). This directory is intended to fix that by extracting allele info by genomic coordinates from 1000 Genomes Phase III.
+There are two choices, depending on the number of files and whether they are expected to share SNPs (eg. if they were sequenced using the same chip).
+
+(1) fix-one-allele-problem.sh - This script will consider that each dataset (if more than one) is independent, so it will run the search for alleles once per run. Then it will call fix-alleles.R to do the dirty work in the datasets.
+
+(2) fix-one-allele-problem_commonSNPs.sh - This script will assume that datasets have SNPs in common. Sometimes we may have many datasets coming from a single or few studies/chips. Then you can select one (or multiple) files as samples to extract their genomic coordinates (see array variable in bash script). Then, the script will extract genomic coordinates and search for alleles just once, then will call fix-alleles_alt.R which will loop the alleles manifest (alleles.txt) over all files, fixing them.
+
+Bear in mind that, for these scripts to work, datasets should be in hg19 (like 1000 genomes Phase III). If not sure, I recommend liftovering to hg19 prior to run these scripts.
+
+Also, please check your headers for them to match those in the scripts, or viceversa. 
+
+
+Guillermo Reales
+22/06/2020
