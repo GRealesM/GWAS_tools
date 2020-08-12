@@ -557,21 +557,26 @@ Then I repipelined (4.4) the files and re-reduced.
 
 - UC_Julia_25082827_1
 
-Last Reviewed: 2020-03-20
+Last Reviewed: 2020-07-31
 
 This file lacked one allele, and had its OR in the following structure: OR(95%CI), so I made a couple of changes prior to processing.
 zcat UC_Julia_25082827_1.tsv.gz | sed -e 's/(/ /' -e 's/)//' -e 's/SNP/SNPID/' -e 's/MINOR_ALELE/ALT/' | gzip > tmp.tsv.gz && mv tmp.tsv.gz UC_Julia_25082827_1.tsv.gz
 
+Update 2020-07-31: I noticed a flaw in my fix_one_allele_problem scripts, so I updated them. Then, I took UC_Julia_1 file in 02, removed REF and run the new scripts.
+These scripts would allow for detection of not only flipped, but also complement and reverse-complement alleles. They will also remove ambiguous alleles.
 
 - VITD_Traglia_32047095
 
-Last Reviewed: 2020-03-20
+Last Reviewed: 2020-07-31
 
 These files lacked one allele too, so I processed them using the two scripts.
 zcat VITD_Traglia_32047095_1.tsv.gz | sed -e '1s/RSID/SNPID/' -e '1s/A1/ALT/' -e 's/;/\t/g' | gzip > tmp.tsv.gz && mv tmp.tsv.gz VITD_Traglia_32047095_1.tsv.gz
 zcat VITD_Traglia_32047095_2.tsv.gz | sed -e '1s/RSID/SNPID/' -e '1s/A1/ALT/' -e 's/;/\t/g' | gzip > tmp.tsv.gz && mv tmp.tsv.gz VITD_Traglia_32047095_2.tsv.gz;
 zcat VITD_Traglia_32047095_3.tsv.gz | sed -e '1s/RSID/SNPID/' -e '1s/A1/ALT/' -e 's/;/\t/g' | gzip > tmp.tsv.gz && mv tmp.tsv.gz VITD_Traglia_32047095_3.tsv.gz;
 zcat VITD_Traglia_32047095_4.tsv.gz | sed -e '1s/RSID/SNPID/' -e '1s/A1/ALT/' -e 's/;/\t/g' | gzip > tmp.tsv.gz && mv tmp.tsv.gz VITD_Traglia_32047095_4.tsv.gz
+
+Update 2020-07-31: I noticed a flaw in my fix_one_allele_problem scripts, so I updated them. Then, I took UC_Julia_1 file in 02, removed REF and run the new scripts.
+These scripts would allow for detection of not only flipped, but also complement and reverse-complement alleles. They will also remove ambiguous alleles.
 
 - Ferreira_20045101
 
@@ -655,12 +660,15 @@ New denomination: RETC (Reticulocyte count)
 
 - IMMED_Traglia_30134952
 
-Last Reviewed: 2020-06-19
+Last Reviewed: 2020-07-31
 
 These 4 files contained data for multiple cytokines, as well as one-allele-only problem.
 I wrote a script to first split them by cytokine (see 93-Fixing_stuff/Special_cases/...Traglia..), and them went through the cytokine names to check for the need to generate new traits in our dictionary or just rename the files. I  To make things easier, I renamed any cytokine that had an existing trait already in our dictionary (see names and equivalents in tableS2 in the paper).
 These files also had the one-allele-problem, and only the effect allele was reported. To solve this I wrote a script (see 93-Fix_stuff/one-allele) and processed all files. 
 Once I did this, I pipelined the files using v4.10.
+
+Update 2020-07-31: I noticed a flaw in my fix_one_allele_problem scripts, so I updated them. Then, I took Traglia files in 02, removed REF and run the new scripts.
+These scripts would allow for detection of not only flipped, but also complement and reverse-complement alleles. They will also remove ambiguous alleles.
 
 - AST_Daya_30787307
 

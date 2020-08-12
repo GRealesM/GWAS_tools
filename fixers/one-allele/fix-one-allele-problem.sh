@@ -18,7 +18,7 @@ echo Extracting list of SNPs
 CHRCOL=$(zcat $target | awk '
  {
    for(i=1;i<=NF;i++) {
-     if($i == "CHR")
+     if($i == "CHR19")
        printf(i)
    }
    exit 0
@@ -28,7 +28,7 @@ CHRCOL=$(zcat $target | awk '
 BPCOL=$(zcat $target | awk '
  {
    for(i=1;i<=NF;i++) {
-     if($i == "BP")
+     if($i == "BP19")
        printf(i)
    }
    exit 0
