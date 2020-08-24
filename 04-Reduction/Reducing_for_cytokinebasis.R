@@ -98,7 +98,7 @@ M[, c("alleles", "alleles.manifest"):=NULL]
 M <- unique(M)
 newname <- strsplit(i, split = "-")[[1]][1]
 
-write.table(M, paste("~/rds/rds-cew54-basis/03-Bases/cytokine_basis/reduced_datasets/",newname,"-ft.tsv", sep = ""), quote = FALSE, row.names = FALSE, sep = "\t")
+fwrite(M, paste0("~/rds/rds-cew54-basis/03-Bases/cytokine_basis/reduced_datasets/",newname,"-ft.tsv"), sep = "\t")
 cat("Done!\n")
 
 }

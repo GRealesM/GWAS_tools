@@ -39,7 +39,6 @@ g.complement <- function (x) {
 g.rev <- function (x, sep = "/") {
   sapply(strsplit(x, sep), function(g) paste(rev(g), collapse = "/"))
 }
-
 ### g.class, as found in annotSnpStats package (github.com/chr1swallace/annotSnpStats/)
 g.class <- function (x, y) {
   if (!identical(names(x), names(y))) 
@@ -108,7 +107,7 @@ rm(input)
 M[, c("alleles", "alleles.manifest"):=NULL]
 newname <- strsplit(i, split = "-")[[1]][1]
 
-write.table(M, paste("~/rds/rds-cew54-basis/GWAS_tools/03-Bases/IMD_basis/reduced_datasets/",newname,"-ft.tsv", sep = ""), quote = FALSE, row.names = FALSE, sep = "\t")
+fwrite(M, paste0("~/rds/rds-cew54-basis/03-Bases/IMD_basis/reduced_datasets/",newname,"-ft.tsv"), quote = FALSE, row.names = FALSE, sep = "\t")
 cat("Done!\n")
 
 }

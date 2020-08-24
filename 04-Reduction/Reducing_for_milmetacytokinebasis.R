@@ -11,7 +11,7 @@
 library(data.table)
 library(magrittr)
 
-load("~/rds/rds-cew54-basis/GWAS_tools/03-Bases/milmetacytokine_basis/milmetacytokine-basis-sparse-1.0.RData")
+load("~/rds/rds-cew54-basis/03-Bases/milmetacytokine_basis/milmetacytokine-basis-sparse-1.0.RData")
 SNP.manifest[,alleles:=paste(ref_a1,ref_a2, sep="/")]
 
 # Load some helper functions
@@ -98,7 +98,7 @@ M[, c("alleles", "alleles.manifest"):=NULL]
 M <- unique(M)
 newname <- strsplit(i, split = "-")[[1]][1]
 
-write.table(M, paste("~/rds/rds-cew54-basis/GWAS_tools/03-Bases/milmetacytokine_basis/reduced_datasets/",newname,"-ft.tsv", sep = ""), quote = FALSE, row.names = FALSE, sep = "\t")
+fwrite(M, paste0("~/rds/rds-cew54-basis/03-Bases/milmetacytokine_basis/reduced_datasets/",newname,"-ft.tsv", sep = ""),sep = "\t")
 cat("Done!\n")
 
 }
