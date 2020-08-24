@@ -74,9 +74,12 @@ Sometimes the files don't have what we need, so we've included some fixes for da
 **Step 3 - Further QC**
 
 - **3a Plot SE vs. log(N0+N1/(N0*N1)) for Case-control datasets** Case-control datasets should be in log(OR) scale, and SE should be inversely proportional to sample size. By plotting log(SE) vs. log(N0+N1/(N0*N1)) on several, pre-defined SNPs, they should show as a straight line. Deviations from this line might mean problems with the dataset, like CC being in linear scale (See 3b for solution).
+
 - **3b - Linear to log(OR) scaling in Case-control datasets** CC datasets should have their BETAs and SE in the log(OR) scale, rather than linear scale. Datasets generated using linear mixed models (eg. BOLT-LMM) should be transformed to log(OR) scale prior to procesing. For scale conversion, use `IMDtools::linORscale`.
 
-- **3c Adjust sdY for quantitative datasets** BETA and SE can measure different things across quantitative trait dataset. To make them comparable, they must have variance ≃ 1. Estimate sdY, and divide BETA and SE by it to ensure variance = 1. This can be done using `IMDtools::sdy.correction`. Note that MAF is required for this step.
+-**3c Adjust sdY for quantitative datasets** BETA and SE can measure different things across quantitative trait dataset. To make them comparable, they must have variance ≃ 1. Estimate sdY, and divide BETA and SE by it to ensure variance = 1. This can be done using `IMDtools::sdy.correction`. Note that MAF is required for this step.
+
+- A script for performing steps 03b and 03c, depending on the type of dataset is available at `03bc-Convert_scales_adjust_sdY/Fix_scales_adjust_sdY.R`.
 
 - Files processed using the previous 3 steps should be placed in 02-Processed.
 
