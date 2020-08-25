@@ -32,6 +32,8 @@ Special note on alleles: REF and ALT alleles are named different ways (eg. A1/A2
 - **0a Missing coordinates** If genomic coordinates are missing, pipeline will fail. If we have SNPIDs, we can use (...) to extract hg19 coordinates from 1000 Genomes project phase III. Ensure your SNP id column is recoded as SNPID. Output will have CHR/BP columns, rather than CHR19/BP19, as this will be done at processing step.
 - **0b - Missing one allele** Some authors report only one allele (usually the risk/effect allele), but for many analysis we need both alleles. Use `fix-one-allele-problem.sh` to use 1000 Genomes phase III reference panel (not supplied) to guess the other allele. If you have multiple files with a common list of alleles, you can use `fix-one-allele-problem_commonSNPs.sh`.
 
+- **0c - Misplaced coords** Some (especially old) files report BP as zero-based, so BP is always one base below actual coordinates. This can be fixed using `Update_positions.R`.
+
 - If the file is missing effect size (encoded as OR, BETA, or Z), the file must be discarded, as it doesn't contain enough information for us to proceed.
 
 
@@ -73,7 +75,7 @@ Sometimes the files don't have what we need, so we've included some fixes for da
 
 **Step 3 - Further QC**
 
-- **3a Plot SE vs. log(N0+N1/(N0*N1)) for Case-control datasets** Case-control datasets should be in log(OR) scale, and SE should be inversely proportional to sample size. By plotting log(SE) vs. log(N0+N1/(N0*N1)) on several, pre-defined SNPs, they should show as a straight line. Deviations from this line might mean problems with the dataset, like CC being in linear scale (See 3b for solution).
+- **3a Plot SE vs. log(N0+N1/(N0*N1)) for Case-control datasets** Case-control datasets should be in log(OR) scale, and SE should be inversely proportional to sample size. By plotting log(SE) vs. log(N0+N1/(N0*N1)) on several, pre-defined SNPs, they should show as a straight line. Deviations from this line might mean problems with the dataset, like CC being in linear scale (See 3b for solution). In practice, we'll use Reduced files to generate these plots, since those are lighter.
 
 - **3b - Linear to log(OR) scaling in Case-control datasets** CC datasets should have their BETAs and SE in the log(OR) scale, rather than linear scale. Datasets generated using linear mixed models (eg. BOLT-LMM) should be transformed to log(OR) scale prior to procesing. For scale conversion, use `IMDtools::linORscale`.
 

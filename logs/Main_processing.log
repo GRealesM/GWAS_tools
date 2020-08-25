@@ -712,3 +712,89 @@ For 2 and 3, reported allele was considered as ALT, cross-checked with the paper
 When I started processing these files, I was building the GWAS_tools system, in order to apply all sorts of tools straight to 01-Workshop.
 For 1 I used 00a-Missing_coords to compute its coordinates from 1000G.
 For 2 and 3 I used 00b-Missing_one_allele/fix-one-allele-problem.sh, changing relevant column names accordingly.
+
+
+- AST_Moffatt_20860503_1
+
+Last Reviewed: 2020-08-25
+
+This file was tricky to assign REF and ALT, and to choose which effect to use.
+Finally, I chouse Allele_1 = REF, and Allele_2 = ALT. See README at 99 for more details about why this choice was made.
+Regarding OR and P, I chose OR_fix and P_fix, following Chris' advice.
+
+After these correction, I pipelined the file using v5.1.
+
+
+- BEHD_Remmers_20622878_1
+
+Last Reviewed: 2020-08-25
+
+This file was especially tricky, because it was unclear to me REF/ALT distribution. This was worsened by the fact that paper did not inform about significant
+SNPs coordiates, and the provided rs weren't in the file. It looks like the authors deposited the genomic data in dbGAP, and someone else did the GWAS of which summary statistics are available.
+I wanted to try at least one shot before abandoning the file, so I used Allele1 = REF and Allele2 = ALT for the time being, so I could get hg38 coordinates and compare them with those of the SNPs reported in the paper. So I pipelined the file using v5.1.
+The first attempt was unsucessful because the positions in the file were zero-based. I fixed this by writing a script to add one position to the position column:
+
+Rscript --vanilla ../GWAS_tools/00c-Misplaced_coords/Update_positions.R BEHD_Remmers_20622878_1.tsv.gz Position 1
+
+After this, I pipelined again, and the results looked better. Pipeline could correctly identify hg19 build and liftover to hg38. Although I managed to liftover it to hg38, I still couldn't find the crucial rs1518111 SNPs. Since there's not enough info in the paper to tell Ref and Alt alleles, I moved liftovered file to Specials and declared it abandoned.
+
+
+- BPD_Smith_19488044_1
+
+Last Reviewed: 2020-08-25
+
+Could not tell ALT and REF alleles from the paper, as reported OR in the paper didn't match those in the data. File likely has other issues, based on my experience with this sort of "dbGAP" datasets (eg. zero-based), so I decided to declare it abandoned.
+
+
+- CEC_Leo_28806749_1
+
+Last Reviewed: 2020-08-25
+
+This file lacked one allele, but fortunately it was in hg19, so I used 
+../GWAS_tools/00b-Missing_one_allele/fix-one-allele-problem.sh CEC_Leo_28806749_1.tsv.gz
+Working on CEC_Leo_28806749_1.tsv.gz
+Extracting list of SNPs
+Extracting both alleles from 1000 genomes data...
+Computing the other allele...
+CEC_Leo_28806749_1.tsv.gz has 277599 SNPs.
+Processed CEC_Leo_28806749_1-fixed.tsv.gz has 276442 SNPs. Writing...
+Done!
+
+After that, I pipelined the file using v5.1.
+
+
+- IBD_Duerr_17068223_1
+
+Last Reviewed: 2020-08-25
+
+This file, from dbGAP, corresponds to an extremely old paper (2006) on IBD in Jewish. I couldn't tell the effect and reference allele from the paper nor from the associated documentation, so I pronounced it abandoned.
+
+
+- LADA_Cousminer_30254083_1
+
+Last Reviewed: 2020-08-25
+
+This file had only one allele reported. Despite being refered to as "reference allele", and this reference not matching the "reference" provided in the paper, it seems that OR refer to that "reference allele" in the data, since rs2476601 (1:114377568) has G and OR=0.582531, and we know that G is the protective allele. Thus I recode it to ALT.
+
+../GWAS_tools/00b-Missing_one_allele/fix-one-allele-problem.sh LADA_Cousminer_30254083_1.tsv.gz
+
+After that, I pipelined LADA_Cousminer_30254083_1-fixed.tsv.gz using v5.1.
+
+
+- PSA_Aterido_30552173
+
+Last Reviewed: 2020-08-25
+
+I originally took these two files from the hpc GWAS_summary_data/. However, these files looked to be the result of imputation, and they didn't have OR or BETA, but multiple Z scores.
+I decided to redownload the datasets from the Excel file in ftp://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/AteridoA_30552173_GCST007043, split it into the two files, and process them. I updated those files in 97-Archive.
+
+
+- T2D_Saxena_17463246_1
+
+Last Reviewed: 2020-08-25
+
+Original file in hg17. I downloaded the harmonised file, which had many missing files. 
+I tried to use harmonised coordinates and the rest from the original file, but it had 4 SNP matches with IMD basis manifest. 
+I declared this file abandoned.
+
+
