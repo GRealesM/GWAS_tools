@@ -798,3 +798,50 @@ I tried to use harmonised coordinates and the rest from the original file, but i
 I declared this file abandoned.
 
 
+- AST_Myers_24824216
+
+Last Reviewed: 2020-08-26
+
+These two files correspond to meta-analyses of African-American and Latino asthma patients and controls.
+These had Z and P, but no BETA or OR, and they're in hg18, so I had to first liftover them to hg19, then compute ALT_FREQ, and then compute BETA from Z.
+
+Since they correspond to meta-analyses, the allele frequency approach may not apply, since it makes sense when populations are more or less homogeneous. An assumption that is lost when dealing with a meta-analysis across different population. I'll wait for discussion to proceed.
+
+
+- MS_IMSGC_17660530_1
+
+Last Reviewed: 2020-08-26
+
+This dataset is a dbGAP dataset. It corresponds to 609 family trios, 2322 case subjects, and 789 control subjects and used genotyping data from two external control data sets. 
+As with other dbGAP datasets, this one proved difficult to tell REF/ALT alleles, since they don't match the "risk allele" logic in the paper (eg. Some SNPs have one named "risk allele" in the paper that corresponds to Allele1 in the dataset, and has OR<1, which would suggest that Allele2 is ALT, and Allele1 is REF. However, in other instances, the risk allele is Allele1, with OR>1, which would indicate that Allele1 is ALT).
+Also, P-values and ORs don't match any of the values in the paper.
+Being a very old study (2007), I decided to pronounce it abandoned.
+
+
+- MS_Baranzini_19010793_1
+
+Last Reviewed: 2020-08-26
+
+This dataset is a dbGAP dataset. By checking the paper once more, I couldn't find out which to which allele OR corresponds to.
+I searched for a README or manifest in dbGAP to find out if there's a general rule for Allele1/2 being REF or ALT, but to no avail.
+Being also a very old study, I decided to pronounce it abandoned.
+
+
+- SLE_Hom_18204098
+
+Last Reviewed: 2020-08-26
+
+This dataset is a dbGAP dataset. As with other dbGAP datasets, this one proved difficult to tell REF/ALT alleles, since they don't match the "risk/minor allele" logic in the paper (eg. Some SNPs have one named "risk/minor allele" in the paper that corresponds to Allele1 in the dataset, and has OR<1, which would suggest that Allele2 is ALT, and Allele1 is REF. However, in other instances, the risk allele is Allele1, with OR>1, which would indicate that Allele1 is ALT).
+Also, some P-values and ORs don't match the values in the paper.
+Being a very old study (2008), I decided to pronounce it abandoned.
+
+
+- T2D_Scott_17463248_1
+
+Last Reviewed: 2020-08-26
+
+This dataset is a dbGAP dataset. As with other dbGAP datasets, this one proved difficult to tell REF/ALT alleles, since they don't match the "risk/minor allele" logic in the paper (eg. Some SNPs have one named "risk/minor allele" in the paper that corresponds to Allele1 in the dataset, and has OR<1, which would suggest that Allele2 is ALT, and Allele1 is REF. However, in other instances, the risk allele is Allele1, with OR>1, which would indicate that Allele1 is ALT).
+Also, many SNPs in the paper seem to be missing from the dataset.
+Being a very old study (2007), I decided to pronounce it abandoned.
+
+
