@@ -51,7 +51,7 @@ projected.table <- lapply(files_to_project, function(file){
   	setcolorder(projected.userdata, c("PC", "Var.Delta", "Delta", "p.overall", "z", "P", "Trait"))
 
   	# More QC
-  	overall_p[index] <<- sprintf("%1.0e",projected.userdata$p.overall[1])
+  	overall_p[index] <<- projected.userdata$p.overall[1]
   	minc.idx <- which.min(projected.userdata$P)
   	mscomp[index] <<- sprintf("%s (%1.0e)",projected.userdata$PC[minc.idx],projected.userdata$P[minc.idx])
 	}
@@ -69,7 +69,7 @@ version  <- 1
 projtablename  <- paste("~/rds/rds-cew54-basis/03-Bases/Projections/Projection_cytokine_basis_", date, "-v",version, ".tsv", sep="")
 qctablename  <- paste("~/rds/rds-cew54-basis/03-Bases/Projections/QC_cytokine_basis_", date, "-v",version, ".tsv", sep="")
 
-while(projtablename %in% dir()){
+while(file.exists(projtablename)){
   version  <- version + 1
   projtablename  <- paste("~/rds/rds-cew54-basis/03-Bases/Projections/Projection_cytokine_basis_", date, "-v",version, ".tsv", sep="")
   qctablename  <- paste("~/rds/rds-cew54-basis/03-Bases/Projections/QC_cytokine_basis_", date, "-v",version, ".tsv", sep="")

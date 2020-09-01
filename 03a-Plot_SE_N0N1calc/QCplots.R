@@ -83,7 +83,7 @@ zplots <- lapply(SNPs, function(snp){
 
 	z <- ggplot(snp.subset, aes(x = BETA, y = abs(Z), label = filename)) +
 	  geom_point()+
-	  geom_text_repel(size = 3, colour="black", data = subset(snp.subset,abs(BETA)>0.5*max(abs(BETA))), force = 7, box.padding=0.3, seed=4)+
+	  geom_text_repel(size = 2, colour="black", data = subset(snp.subset,abs(BETA)>0.5*max(abs(BETA))), force = 7, box.padding=0.3, seed=4)+
 	  geom_vline(xintercept = 0, linetype = "dashed", colour = "red")+
 	  geom_hline(aes(yintercept =5), linetype = "dashed", colour = "red")+
 	  labs(title = snp)+

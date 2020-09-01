@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # This script will run fivee Rscripts to project all sumstat files onto their respective bases we have so far.
-scriptpath=(~/rds/rds-cew54-basis/GWAS_tools/05-Projection)
+scriptpath=(~/rds/rds-cew54-basis/GWAS_tools/05-Projection/)
 
 echo "This script will reduce all sumstat files in this directory by the manifests in all three bases"
 echo "Projecting for IMD basis..."
