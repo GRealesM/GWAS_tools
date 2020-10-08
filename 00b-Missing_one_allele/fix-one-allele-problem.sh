@@ -5,6 +5,9 @@
 # Sometimes files come with only one allele (usually, the effect allele). This script is intended to use 1000 genomes data to 
 # extract both alleles for all SNPs in the target dataset, and then assign the other allele to REF (in case we know the one allele is the ALT).
 
+# How to use
+# Supply a file in tsv.gz format. This file should be in GRCh37/hg19, and contain the colums: CHR19, BP19, and ALT (effect allele, usually the only allele provided).
+# Example: ~/rds/rds-cew54-basis/GWAS_tools/00b-Missing_one_allele/fix-one-allele-problem.sh yourdataset.tsv.gz 
 
 array=(~/rds/rds-cew54-wallace-share/Data/reference/1000GP_Phase3/1000GP_Phase3*legend.gz)
 #targets=(*.tsv.gz)

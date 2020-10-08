@@ -10,6 +10,9 @@ library(IMDtools)
 # devtools::install_github("tidyverse/googlesheets4")
 library(googlesheets4)
 
+# Get all help that you can
+setDTthreads(0)
+
 # Since we need extra information (N0 and N1), we'll obtain it from our Main_table
 gs4_deauth()
 message("Fetching metadata...")
@@ -27,7 +30,7 @@ if(!is.na(N1) && N1 > 0){
   file[,orig.BETA:=BETA][,orig.SE:=SE][,c("BETA", "SE"):=linORscale(beta = BETA, se = SE,N0 = N0, N1 = N1)]
 } else {
   message(i, " seems to be a quantitative trait, computing sdY and transforming...")
-  file[,orig.BETA:=BETA][,orig.SE:=SE][,c("BETA", "SE"):=sdY.correction(beta = BETA, se = SE, maf = AF, n = N0)]
+  file[,orig.BETA:=BETA][,orig.SE:=SE][,c("BETA", "SE"):=sdY.correction(beta = BETA, se = SE, maf = ALT_FREQ, n = N0)]
 }
 newname <- paste(strsplit(i, split = "-")[[1]][1], "-bsadj.tsv.gz", sep="")
 fwrite(file, newname, sep = "\t", quote = FALSE, row.names = FALSE)

@@ -68,7 +68,7 @@ do
 done
 
 
-Rscript --vanilla Mergeback.R $FILE Freqs_"$FILENAME".txt
+Rscript --vanilla ~/rds/rds-cew54-basis/GWAS_tools/02a-Missing_freqs/Mergeback.R $FILE Freqs_"$FILENAME".txt
 rm temp* hg19snps.txt tmpsnps.txt Freqs_*
 
 echo "Done!"

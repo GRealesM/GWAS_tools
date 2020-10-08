@@ -1,8 +1,8 @@
 #!/bin/bash
 
-## Backliftover from hg38 to hg19
+## Backliftover from hg18 to hg19
 # Version 1.0
-# Background: This script is intended to `back-liftOver` files that have hg38 coordinates (i.e. CHR38, BP38) but lack hg19 coordinates, necessary in some contexts.
+# Background: This script is intended to liftOver files that have hg18 coordinates (i.e. CHR18, BP18) but lack hg19 coordinates, necessary in some contexts.
 
 shopt -s nullglob
 

@@ -845,3 +845,142 @@ Also, many SNPs in the paper seem to be missing from the dataset.
 Being a very old study (2007), I decided to pronounce it abandoned.
 
 
+- PID_Thaventhiram_32678341_1
+
+Last Reviewed: 2020-09-16
+
+The dataset had only one allele. So I applied GWAS_tools/00b-Missing_allele/fix-one-allele-problem-sh and then pipeline_v5.1.sh.
+
+
+- AST_Myers_24824216
+
+Last Reviewed: 2020-09-17
+
+These 2 datasets correspond to females and males of an asthma GWAS comprising European, African-Americans and Latino populations, as well as a meta-analysis of all populations.
+Files provide Z and P for each population, as well as hg18 coordinates.
+To fix these files, I first renamed their coordinates to CHR18 and BP18, and changed extensions to .tsv.gz. Then I liftovered both to hg19 using
+../GWAS_tools/02c-Backliftover_hg19/liftover-hg18-hg19.sh
+
+Then I splitted the files using the code below, using the following numeration
+- 1 EA (Males)
+- 2 EA (Females)
+- 3 AA (Males)
+- 4 AA (Females)
+- 5 Latino (Males)
+- 6 Latino (Females)
+
+
+library(data.table)
+
+dsf  <- fread("AST_Myers_24824216_2-hg18with19.tsv.gz")
+dsm  <- fread("AST_Myers_24824216_1-hg18with19.tsv.gz")
+
+
+eurf <- dsf[, c("SNPID", "CHR18", "BP18","CHR19","BP19", "Host_Gene","A1", "A0", "EA.Z", "EA.p.value")]
+eurm <- dsm[, c("SNPID", "CHR18", "BP18","CHR19","BP19", "Host_Gene","A1", "A0", "EA.Z", "EA.p.value")]
+names(eurf)[c(7:10)] <- c("ALT","REF","Z","P")
+names(eurm)[c(7:10)] <- c("ALT","REF","Z","P")
+eurf <- na.omit(eurf)
+eurm <- na.omit(eurm)
+
+aaf <- dsf[, c("SNPID", "CHR18", "BP18","CHR19","BP19", "Host_Gene","A1", "A0", "AA.Z", "AA.p.value")]
+aam <- dsm[, c("SNPID", "CHR18", "BP18","CHR19","BP19", "Host_Gene","A1", "A0", "AA.Z", "AA.p.value")]
+names(aaf)[c(7:10)] <- c("ALT","REF","Z","P")
+names(aam)[c(7:10)] <- c("ALT","REF","Z","P")
+aaf <- na.omit(aaf)
+aam <- na.omit(aam)
+
+latf <- dsf[, c("SNPID", "CHR18", "BP18","CHR19","BP19", "Host_Gene","A1", "A0", "Latino.Z", "Latino.p.value")]
+latm <- dsm[, c("SNPID", "CHR18", "BP18","CHR19","BP19", "Host_Gene","A1", "A0", "Latino.Z", "Latino.p.value")]
+names(latf)[c(7:10)] <- c("ALT","REF","Z","P")
+names(latm)[c(7:10)] <- c("ALT","REF","Z","P")
+latf <- na.omit(latf)
+latm <- na.omit(latm)
+
+fwrite(eurm, "AST_Myers_24824216_1-split.tsv.gz", sep="\t")
+fwrite(eurf, "AST_Myers_24824216_2-split.tsv.gz", sep="\t")
+fwrite(aam, "AST_Myers_24824216_3-split.tsv.gz", sep="\t")
+fwrite(aaf, "AST_Myers_24824216_4-split.tsv.gz", sep="\t")
+fwrite(latm, "AST_Myers_24824216_5-split.tsv.gz", sep="\t")
+fwrite(latf, "AST_Myers_24824216_6-split.tsv.gz", sep="\t")
+
+Next step was to compute BETA/SE from Z. For that we'll need allele frequencies. Since we need to choose a reference population, we choose CEU for European Americans, ASW for African Americans/AfroCaribbean, and MXL for Latinos.
+
+../GWAS_tools/02a-Missing_freqs/Compute_freqs.sh -f AST_Myers_24824216_1-split.tsv.gz -p CEU
+../GWAS_tools/02a-Missing_freqs/Compute_freqs.sh -f AST_Myers_24824216_2-split.tsv.gz -p CEU
+../GWAS_tools/02a-Missing_freqs/Compute_freqs.sh -f AST_Myers_24824216_3-split.tsv.gz -p ASW
+../GWAS_tools/02a-Missing_freqs/Compute_freqs.sh -f AST_Myers_24824216_4-split.tsv.gz -p ASW
+../GWAS_tools/02a-Missing_freqs/Compute_freqs.sh -f AST_Myers_24824216_5-split.tsv.gz -p MXL
+../GWAS_tools/02a-Missing_freqs/Compute_freqs.sh -f AST_Myers_24824216_6-split.tsv.gz -p MXL
+
+Once we have the frequencies, we can use ../GWAS_tools/02b-BETA_SE_from_Z/Compute_BETA_SE_from_Z.R.
+We need to use the number of controls and cases, provided in the paper. Bear in mind that controls are pooled in each ancestry group
+
+Rscript ../GWAS_tools/02b-BETA_SE_from_Z/Compute_BETA_SE_from_Z.R AST_Myers_24824216_1-withfreqs.tsv.gz 1535 1052
+Rscript ../GWAS_tools/02b-BETA_SE_from_Z/Compute_BETA_SE_from_Z.R AST_Myers_24824216_2-withfreqs.tsv.gz 1535 1019
+Rscript ../GWAS_tools/02b-BETA_SE_from_Z/Compute_BETA_SE_from_Z.R AST_Myers_24824216_3-withfreqs.tsv.gz 1503 675
+Rscript ../GWAS_tools/02b-BETA_SE_from_Z/Compute_BETA_SE_from_Z.R AST_Myers_24824216_4-withfreqs.tsv.gz 1503 837
+Rscript ../GWAS_tools/02b-BETA_SE_from_Z/Compute_BETA_SE_from_Z.R AST_Myers_24824216_5-withfreqs.tsv.gz 792 926
+Rscript ../GWAS_tools/02b-BETA_SE_from_Z/Compute_BETA_SE_from_Z.R AST_Myers_24824216_6-withfreqs.tsv.gz 792 710 
+
+Now we can run pipeline v5.1 (not before renaming CHR19/BP19 back to CHR/BP...)
+
+
+- HBVV_Nishida_29534301_1
+
+Last Reviewed: 2020-09-17
+
+This dataset has lots of different columns, and it was unclear to me which ones to choose. After discussing the issue with Chris, we concluded that
+slope = BETA, and Slope SE = SE. We can use them to compute P values, although they're provided.
+
+
+library(data.table)
+
+ds <- fread("RHB_Nishida_29534301_1.tsv.gz")
+setnames(ds, old=c("Slope", "Slope SE"), new=c("BETA","SE"))
+ds[,Z:=BETA/SE][,P:=2*pnorm(-abs(Z))]
+# Now let's get the alleles
+ds$`Reference Alleles A/B`  <- gsub("\\[","",ds$`Reference Alleles A/B`) 
+ds$`Reference Alleles A/B`  <- gsub("\\]","",ds$`Reference Alleles A/B`) 
+ds[,c("A","B"):=tstrsplit(`Reference Alleles A/B`, "/")]
+ds[,ALT:=ifelse(`Minor Allele` == "A", A,B)][,REF:=ifelse(`Minor Allele` == "B", A,B)]
+ds  <- na.omit(ds,cols="Chromosome")
+ds[,c("A", "B"):=NULL]
+setnames(ds,old=c("dbSNP RS ID", "Marker"), new=c("SNPID","Altmarkername"))
+fwrite(ds, "HBVV_Nishida_29534301_1.tsv.gz", sep="\t")
+
+- Vuckovic_32888494
+
+Last Reviewed: 2020-09-24
+
+These are 29 Blood cell traits GWAS datasets.
+They didn't present any major issue, so I simply downloaded them, included metadata at Main_GWAS_table, pipelined (v5.1), adjusted sdY using
+
+Rscript ../GWAS_tools/03bc-Convert_scales_adjust_sdY/Fix_scales_adjust_sdY.R
+
+
+- Chen_32888493
+
+Last Reviewed: 2020-09-24
+
+These datasets correspond to 15 Blood cell trait multi-cohort and trans-ethnic meta-analysis.
+They represent meta-analyses by cohort and trans-ethnic, so I used the following numbering for the files:
+1 - AA - African/African American
+2 - EA - European
+3 - EAS - East Asian
+4 - HA - Hispanic American/Latinos
+5 - Trans - Trans-ethnic meta-analysis using GWAMA
+6 - Trans - Trans-ethnic meta-analysis using MRMEGA
+
+I used existing codes for traits, and included all relevant data in Main_GWAS_table.
+
+Certain notes to bear in mind:
+- Trans-ethnic meta-analyses included data from South Asian cohort (UKBB), which is not available as single-cohort.
+- East Asian for RDW was not available.
+- For sample sizes, I downloaded Table S1, I looked for the composition of each cohort, and summed sample sizes for each cohort. I considered totals (including South Asian) but not MVP cohort (used in replication) for Trans-ethnic meta-analysis sample size. I saved the modified excel file and uploaded to 99-Technical_files.
+
+I downloaded all available from their original source, and checked the headers, as they were heterogeneous (see README_Chen_32888493.txt).
+Also, GWAMA files showed to have rs_number as pids in CHR:BP_REF_ALT format, so I wrote a script for those cases: fix_chen.R
+
+After fixing and pipelining (v5.1), I run Fix_scales_adjust_sdY for all 89 files.
+
