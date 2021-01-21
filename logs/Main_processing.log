@@ -984,3 +984,9 @@ Also, GWAMA files showed to have rs_number as pids in CHR:BP_REF_ALT format, so 
 
 After fixing and pipelining (v5.1), I run Fix_scales_adjust_sdY for all 89 files.
 
+- T1D_Inshaw_up_1
+
+Last Reviewed: 2020-11-26
+
+This dataset is a meta-analysis, and has minor_allele, and alleleA and alleleB columns. In most occasions alleleB matches the minor_allele, so if we assume that the effect allele is usually the minor allele, we can say that alleleA = REF and alleleB = ALT. I assigned REF/ALT according to this.
+
