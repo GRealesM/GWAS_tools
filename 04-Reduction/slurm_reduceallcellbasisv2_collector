@@ -16,4 +16,4 @@ export I_MPI_PIN_ORDER=scatter # Adjacent domains have minimal sharing of caches
 JOBID=$SLURM_JOB_ID
 echo -e "JobID: $JOBID"
 G=$SLURM_ARRAY_TASK_ID ### this is the array variable, you can use it the way you want. In this example I use it to select the gene based on the line number in a file
-Rscript /home/gr440/rds/rds-cew54-basis/92-Reducing_files/Reducing_all_for_cellbasis_v2_collector.R  $G
+Rscript /home/gr440/rds/rds-cew54-basis/GWAS_tools/04-Reduction/Reducing_all_for_cellbasis_v2_collector.R  $G

@@ -24,10 +24,10 @@ args <- as.numeric(args)
 #start_idx  <- args
 #end_idx <- start_idx + 19
 #if(end_idx > length(dir("../02-Processed/", pattern="*tsv.gz"))){
-	end_idx <- length(dir("../02-Processed/", pattern="*tsv.gz")) 
+	end_idx <- length(dir("../../02-Processed/", pattern="*tsv.gz")) 
 #}
 
-load("../03-Bases/cell_basis_v2/cell-basis-sparse-2.0.RData")
+load("../../03-Bases/cell_basis_v2/cell-basis-sparse-2.0.RData")
 SNP.manifest[,alleles:=paste(ref_a1,ref_a2, sep="/")]
 
 # Load some helper functions
@@ -73,7 +73,7 @@ g.class <- function (x, y) {
 
 #for(i in dir("../02-Processed/", pattern="*tsv.gz")[start_idx:end_idx]){
 
-i = dir("../02-Processed/", pattern="*tsv.gz")[args]
+i = dir("../../02-Processed/", pattern="*tsv.gz")[args]
 cat("Working on ", i, ".\n", sep = "")
 filepath  <- file.path("../02-Processed/", i)
 input <- fread(filepath)
@@ -108,7 +108,7 @@ M[, c("alleles", "alleles.manifest"):=NULL]
 M <- unique(M)
 newname <- strsplit(i, split = "-")[[1]][1]
 
-write.table(M, paste("../03-Bases/cell_basis_v2/reduced_datasets/",newname,"-ft.tsv", sep = ""), quote = FALSE, row.names = FALSE, sep = "\t")
+write.table(M, paste("../../03-Bases/cell_basis_v2/reduced_datasets/",newname,"-ft.tsv", sep = ""), quote = FALSE, row.names = FALSE, sep = "\t")
 cat("Done!\n")
 
 #}
