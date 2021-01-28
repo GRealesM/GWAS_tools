@@ -2,7 +2,7 @@
 ## DATASET PROJECTION ONTO THE BLOOD CELL BASIS
 #########################################
 
-# Introduction: This code is meant to project our processed datasets onto the Blood cell basis v2
+# Introduction: This code is meant to project our processed datasets onto the Blood cell basis
 
 
 ##############################################
@@ -12,14 +12,14 @@
 library(data.table)
 library(Matrix)
 library(magrittr)
-load("~/rds/rds-cew54-basis/03-Bases/cell_basis_v2/cell-basis-sparse-2.0.RData")
+load("../cell_basis_v2/cell-basis-sparse-2.0.RData")
 
 # We load the traits that were used to create the basis first, then we'll append the rest of traits to that table
-projected.basis <- readRDS("~/rds/rds-cew54-basis/03-Bases/cell_basis/cell_basis_trait_projection.RDS")
+projected.basis <- readRDS("../cell_basis_v2/cell_basis_v2_trait_projection.RDS")
 projected.basis[, `:=` (Var.Delta=0, z=0, P=NA)]
 setnames(projected.basis, c("delta", "trait"), c("Delta", "Trait"))
 
-files_to_project  <- dir("~/rds/rds-cew54-basis/03-Bases/cell_basis/reduced_datasets/", pattern = ".tsv")
+files_to_project  <- dir("../cell_basis_v2/reduced_datasets/", pattern = ".tsv")
 nfiles <- length(files_to_project)
 Trait <- rep(NA,nfiles)
 nSNP <- rep(NA, nfiles)
@@ -29,7 +29,7 @@ mscomp <- rep(NA,nfiles)
 projected.table <- lapply(files_to_project, function(file){
 	message("Projecting ", file)
 	trait_label <- strsplit(file, "-", fixed = TRUE)[[1]][1]
-	ss.file <- file.path("~/rds/rds-cew54-basis/03-Bases/cell_basis/reduced_datasets", file)
+	ss.file <- file.path("../cell_basis_v2/reduced_datasets", file)
 	index <- which(files_to_project == file) 
 	sm <- fread(ss.file)
 	sm <- unique(sm)
@@ -51,7 +51,7 @@ projected.table <- lapply(files_to_project, function(file){
   	setcolorder(projected.userdata, c("PC", "Var.Delta", "Delta", "p.overall", "z", "P", "Trait"))
 
   	# More QC
-  	overall_p[index] <<- projected.userdata$p.overall[1]
+  	overall_p[index] <<- sprintf("%1.0e",projected.userdata$p.overall[1])
   	minc.idx <- which.min(projected.userdata$P)
   	mscomp[index] <<- sprintf("%s (%1.0e)",projected.userdata$PC[minc.idx],projected.userdata$P[minc.idx])
 	}
@@ -66,13 +66,13 @@ QC.table <- data.table(Trait, nSNP, overall_p, mscomp)
 
 date <- format(Sys.time(), format="%Y%m%d")
 version  <- 1
-projtablename  <- paste("~/rds/rds-cew54-basis/03-Bases/Projections/Projection_cell_basis_", date, "-v",version, ".tsv", sep="")
-qctablename  <- paste("~/rds/rds-cew54-basis/03-Bases/Projections/QC_cell_basis_", date, "-v",version, ".tsv", sep="")
+projtablename  <- paste("Projection_cell_basis_v2_", date, "-v",version, ".tsv", sep="")
+qctablename  <- paste("QC_cell_basis_v2_", date, "-v",version, ".tsv", sep="")
 
-while(file.exists(projtablename)){
+while(projtablename %in% dir()){
   version  <- version + 1
-  projtablename  <- paste("~/rds/rds-cew54-basis/03-Bases/Projections/Projection_cell_basis_", date, "-v",version, ".tsv", sep="")
-  qctablename  <- paste("~/rds/rds-cew54-basis/03-Bases/Projections/QC_cell_basis_", date, "-v",version, ".tsv", sep="")
+  projtablename  <- paste("Projection_cell_basis_v2_", date, "-v",version, ".tsv", sep="")
+  qctablename  <- paste("QC_cell_basis_v2_", date, "-v",version, ".tsv", sep="")
 }
 
 write.table(projected.full, projtablename, sep = "\t", quote = FALSE, row.names = FALSE)

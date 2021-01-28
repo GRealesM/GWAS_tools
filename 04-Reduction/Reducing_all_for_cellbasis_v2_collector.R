@@ -75,7 +75,7 @@ g.class <- function (x, y) {
 
 i = dir("../../02-Processed/", pattern="*tsv.gz")[args]
 cat("Working on ", i, ".\n", sep = "")
-filepath  <- file.path("../02-Processed/", i)
+filepath  <- file.path("../../02-Processed/", i)
 input <- fread(filepath)
 input <- input[, c("SNPID", "CHR38", "BP38","REF","ALT", "BETA", "SE", "P")]
 input[,alleles:=paste(REF,ALT,sep="/")][,pid:=paste(CHR38,BP38,sep=":")]
