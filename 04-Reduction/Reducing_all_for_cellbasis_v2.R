@@ -24,7 +24,7 @@ if(end_idx > length(dir("../02-Processed/", pattern="*tsv.gz"))){
 	end_idx <- length(dir("../02-Processed/", pattern="*tsv.gz")) 
 }
 
-load("../03-Bases/cell_basis_v2/cell-basis-sparse-2.0.RData")
+load("../../03-Bases/cell_basis_v2/cell-basis-sparse-2.0.RData")
 SNP.manifest[,alleles:=paste(ref_a1,ref_a2, sep="/")]
 
 # Load some helper functions
@@ -68,10 +68,10 @@ g.class <- function (x, y) {
 ## DATA INPUT
 #############################
 
-for(i in dir("../02-Processed/", pattern="*tsv.gz")[start_idx:end_idx]){
+for(i in dir("../../02-Processed/", pattern="*tsv.gz")[start_idx:end_idx]){
 
 cat("Working on ", i, ".\n", sep = "")
-filepath  <- file.path("../02-Processed/", i)
+filepath  <- file.path("../../02-Processed/", i)
 input <- fread(filepath)
 input <- input[, c("SNPID", "CHR38", "BP38","REF","ALT", "BETA", "SE", "P")]
 input[,alleles:=paste(REF,ALT,sep="/")][,pid:=paste(CHR38,BP38,sep=":")]
@@ -102,9 +102,19 @@ rm(input)
   }
 M[, c("alleles", "alleles.manifest"):=NULL]
 M <- unique(M)
+
+# Sometimes more than one SNP (with different alleles) are mapped to the same position. To prevent SNPs in the same position, but not in the manifest to proceed, let's do a quick check.
+# This way only SNPs with exactly the same pid, and both alleles (and aligned) as the SNP.manifest will proceed.
+
+if(any(duplicated(M$pid))){
+ snp.M <- paste(M$pid, M$REF, M$ALT, sep = ":")
+ snp.man <- paste(SNP.manifest$pid, SNP.manifest$ref_a1, SNP.manifest$ref_a2, sep = ":")
+ M <- M[snp.M %in% snp.man,]
+}
+
 newname <- strsplit(i, split = "-")[[1]][1]
 
-write.table(M, paste("../03-Bases/cell_basis_v2/reduced_datasets/",newname,"-ft.tsv", sep = ""), quote = FALSE, row.names = FALSE, sep = "\t")
+write.table(M, paste("../../03-Bases/cell_basis_v2/reduced_datasets/",newname,"-ft.tsv", sep = ""), quote = FALSE, row.names = FALSE, sep = "\t")
 cat("Done!\n")
 
 }
