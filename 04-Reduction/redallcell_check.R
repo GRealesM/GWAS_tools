@@ -1,3 +1,4 @@
+# This script is intended to check what went wrong in reducing stuff
 library(data.table)
 library(magrittr)
 

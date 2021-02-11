@@ -3,7 +3,7 @@
 #SBATCH -A CWALLACE-SL3-CPU
 #SBATCH --nodes 1
 #SBATCH --ntasks 8
-#SBATCH --time 04:00:00
+#SBATCH --time 02:30:00
 #SBATCH --mail-type FAIL
 #SBATCH -p skylake-himem
 #SBATCH --output=./err/RCBv2/%A_%a.err

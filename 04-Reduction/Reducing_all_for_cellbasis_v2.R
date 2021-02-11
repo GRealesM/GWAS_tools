@@ -18,9 +18,10 @@ setDTthreads(0)
 args <- commandArgs(trailingOnly = TRUE)
 args <- as.numeric(args)
 
+
 start_idx  <- args
-end_idx <- start_idx + 19
-if(end_idx > length(dir("../02-Processed/", pattern="*tsv.gz"))){
+end_idx <- start_idx + 9
+if(end_idx > length(dir("../../02-Processed/", pattern="*tsv.gz"))){
 	end_idx <- length(dir("../02-Processed/", pattern="*tsv.gz")) 
 }
 
