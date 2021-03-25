@@ -4,6 +4,7 @@
 
 # Introduction: This code is meant to project our processed datasets onto the Blood cell basis
 
+# We'll use the same reduced datasets as cell basis v2 for testing purposes.
 
 ##############################################
 ### LOAD LIBRARIES AND SET REQUIRED FUNCTIONS
@@ -12,7 +13,7 @@
 library(data.table)
 library(Matrix)
 library(magrittr)
-load("../../03-Bases/cell_basis_v2/cell-basis-sparse-2.0.RData")
+load("../../03-Bases/cell_basis_v3_varimax/basis_building/cell-basis-sparse-3.0.RData")
 
 # Obsolete
 # We load the traits that were used to create the basis first, then we'll append the rest of traits to that table
@@ -67,13 +68,13 @@ QC.table <- data.table(Trait, nSNP, overall_p, mscomp)
 
 date <- format(Sys.time(), format="%Y%m%d")
 version  <- 1
-projtablename  <- paste("Projection_cell_basis_v2_", date, "-v",version, ".tsv", sep="")
-qctablename  <- paste("QC_cell_basis_v2_", date, "-v",version, ".tsv", sep="")
+projtablename  <- paste("Projection_cell_basis_v3_", date, "-v",version, ".tsv", sep="")
+qctablename  <- paste("QC_cell_basis_v3_", date, "-v",version, ".tsv", sep="")
 
 while(projtablename %in% dir("../../03-Bases/Projections")){
   version  <- version + 1
-  projtablename  <- paste("Projection_cell_basis_v2_", date, "-v",version, ".tsv", sep="")
-  qctablename  <- paste("QC_cell_basis_v2_", date, "-v",version, ".tsv", sep="")
+  projtablename  <- paste("Projection_cell_basis_v3_", date, "-v",version, ".tsv", sep="")
+  qctablename  <- paste("QC_cell_basis_v3_", date, "-v",version, ".tsv", sep="")
 }
 
 write.table(projected.table, paste0("../../03-Bases/Projections/", projtablename), sep = "\t", quote = FALSE, row.names = FALSE)

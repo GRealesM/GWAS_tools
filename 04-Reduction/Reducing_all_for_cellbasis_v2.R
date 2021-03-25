@@ -22,7 +22,7 @@ args <- as.numeric(args)
 start_idx  <- args
 end_idx <- start_idx + 9
 if(end_idx > length(dir("../../02-Processed/", pattern="*tsv.gz"))){
-	end_idx <- length(dir("../02-Processed/", pattern="*tsv.gz")) 
+	end_idx <- length(dir("../../02-Processed/", pattern="*tsv.gz")) 
 }
 
 load("../../03-Bases/cell_basis_v2/cell-basis-sparse-2.0.RData")

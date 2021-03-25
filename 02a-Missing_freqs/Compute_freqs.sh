@@ -61,7 +61,7 @@ echo -e "CHR19\tBP19\tSNPID\tREF\tALT\tALT_FREQ\tOBS_CT" > Freqs_"$FILENAME".txt
 # We extract frequencies and append to our Freqs file
 for chr in {1..22};
 do
-	echo "Exctracting from chr$chr..."
+	echo "Extracting from chr$chr..."
 	grep -P "^"$chr" " hg19snps.txt > tmpsnps.txt
 	plink2 --bfile ~/rds/rds-cew54-basis/95-1000genomes/reference_hg19/chr$chr --keep ~/rds/rds-cew54-basis/GWAS_tools/02a-Missing_freqs/"$POP"_samples.txt --extract range tmpsnps.txt --freq cols=+pos --out temp
 	tail -n+2 temp.afreq >> Freqs_"$FILENAME".txt
