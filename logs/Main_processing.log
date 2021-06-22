@@ -997,7 +997,30 @@ Last Reviewed: 2021-02-03
 12 datasets were downloaded from HGI website, preprocessed to change the column names to some the pipeline can process (will fix this in conming versions of the pipeline) using preCOVIDHGI.R (in GWAS_tools/fixers). Then I processed them using pipeline v5.1.
 
 
+- PEMFOL_Augusto_33991537_1
 
+Last Reviewed: 2021-06-21
+
+Suppl. Table 3. In Excel format. Reference allele was missing and had to be estimated.
+
+- JIA_LopezIsac_33106285_1
+
+Last Reviewed: 2021-06-21
+
+From the paper I concluded that AlleleA = ALT. Used all_OR and computed BETA/SE from P-values. 
+
+
+- ButlerLaporte_33204752
+
+Last Reviewed: 2021-06-22
+
+46 datasets were downloaded from GWAS catalog. Since they're quantitative traits (antibody and IgG measurements), I applied sdY correction to them.
+
+- Folkersen_33067605
+
+Last Reviewed: 2021-06-22
+
+90 datasets were downloaded from GWAS catalog. Since they're quantitative traits (antibody and IgG measurements), I applied sdY correction to them.
 
 
 

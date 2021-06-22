@@ -10,7 +10,7 @@
 
 library(data.table)
 library(magrittr)
-setDTthreads(10)
+setDTthreads(0)
 
 load("~/rds/rds-cew54-basis/03-Bases/cell_basis_v2/cell-basis-sparse-2.0.RData")
 SNP.manifest[,alleles:=paste(ref_a1,ref_a2, sep="/")]
@@ -52,11 +52,29 @@ g.class <- function (x, y) {
   return(ret)
 }
 
+
 #############################
 ## DATA INPUT
 #############################
 
-for(i in dir(pattern="*-hg38.tsv.gz")){
+# Get the range of files from args
+# This time we'll use a different strategy, involving array jobs.
+# Since we want to control the size of the batch to be similar in all cases, we'll create another variable to store the index + number of extra jobs
+args <- commandArgs(trailingOnly = TRUE)
+if(length(args) > 0) {
+	args <- as.numeric(args)
+	start_idx  <- args
+	end_idx <- start_idx + 99 # Set the amount of files we want to process each time (and set array job acconrdingly). Here we'll process, for example, files 1-99, so next job can start from 101.
+	if(end_idx > length(dir(pattern="*-hg38.tsv.gz"))){
+		end_idx <- length(dir(pattern="*-hg38.tsv.gz")) 
+	}
+	files <- dir(pattern="*-hg38.tsv.gz")[start_idx:end_idx]
+} else{
+	files <- dir(pattern="*-hg38.tsv.gz") 
+}
+
+
+for(i in files){
 
 cat("Working on ", i, ".\n", sep = "")
 input <- fread(i)

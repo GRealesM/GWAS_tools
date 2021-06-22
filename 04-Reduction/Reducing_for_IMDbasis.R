@@ -12,6 +12,7 @@
 library(cupcake)
 library(data.table)
 library(magrittr)
+setDTthreads(0)
 
 
 # Since SNP.manifest at Cupcake is in hg19, we liftover it to hg38
@@ -65,10 +66,25 @@ g.class <- function (x, y) {
 #############################
 ## DATA INPUT
 #############################
+# Get the range of files from args
+# This time we'll use a different strategy, involving array jobs.
+# Since we want to control the size of the batch to be similar in all cases, we'll create another variable to store the index + number of extra jobs
+args <- commandArgs(trailingOnly = TRUE)
+if(length(args) > 0) {
+	args <- as.numeric(args)
+	start_idx  <- args
+	end_idx <- start_idx + 99 # Set the amount of files we want to process each time (and set array job acconrdingly). Here we'll process, for example, files 1-99, so next job can start from 101.
+	if(end_idx > length(dir(pattern="*-hg38.tsv.gz"))){
+		end_idx <- length(dir(pattern="*-hg38.tsv.gz")) 
+	}
+	files <- dir(pattern="*-hg38.tsv.gz")[start_idx:end_idx]
+} else{
+	files <- dir(pattern="*-hg38.tsv.gz") 
+}
 
-for(i in dir(pattern = "*-hg38.tsv.gz")){
 
-#for(i in dir("../04-Liftovered/", pattern = "*gz")[21:length(dir("../04-Liftovered/", pattern = "*gz"))]){
+for(i in files){
+
 cat("Working on ", i, ".\n", sep = "")
 input <- fread(i)
 input <- input[, c("SNPID", "CHR38", "BP38","REF","ALT", "BETA", "SE", "P")]
@@ -107,7 +123,7 @@ rm(input)
 M[, c("alleles", "alleles.manifest"):=NULL]
 newname <- strsplit(i, split = "-")[[1]][1]
 
-fwrite(M, paste0("~/rds/rds-cew54-basis/03-Bases/IMD_basis/reduced_datasets/",newname,"-ft.tsv"), quote = FALSE, row.names = FALSE, sep = "\t")
+fwrite(M, paste0("~/rds/rds-cew54-basis/03-Bases/IMD_basis/reduced_datasets/",newname,"-ft.tsv"), sep = "\t")
 cat("Done!\n")
 
 }
