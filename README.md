@@ -37,7 +37,7 @@ Special note on alleles: REF and ALT alleles are named different ways (eg. A1/A2
 - If the file is missing effect size (encoded as OR, BETA, or Z), the file must be discarded, as it doesn't contain enough information for us to proceed.
 
 
-**Step 1 - Processing file using Pipeline (v5.0)**
+**Step 1 - Processing file using Pipeline (v5.2)**
 
 `Full_pipeline_vX.X.sh` will perform the following steps automatically, taking a compressed (.tsv.gz) as an input
 - Check column separator, in the dataset, and change it to tabs.
@@ -50,7 +50,9 @@ Special note on alleles: REF and ALT alleles are named different ways (eg. A1/A2
     - P-value for association (P)
     - Odds-ratio (OR) or BETA (BETA)
     - Standard Error of the log OR (SE)
+    - Effect allele frequency (ALT_FREQ)
 - Check if all minimum columns are present. CHR, BP, and P are absolutely essential. OR or BETA must be present, too.
+- Check alleles are expressed in upper case letters, and coerce them to upper case if not.
 - If columns are missing, try to compute them:
     - Compute BETA from log(OR), if OR is present.
     - Compute BETA and SE from Z, MAF, and N0/N1, if those are present.*

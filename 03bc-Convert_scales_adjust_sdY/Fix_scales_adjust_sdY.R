@@ -33,7 +33,7 @@ if(!is.na(N1) && N1 > 0){
   file[,orig.BETA:=BETA][,orig.SE:=SE][,c("BETA", "SE"):=sdY.correction(beta = BETA, se = SE, maf = ALT_FREQ, n = N0)]
 }
 newname <- paste(strsplit(i, split = "-")[[1]][1], "-bsadj.tsv.gz", sep="")
-fwrite(file, newname, sep = "\t", quote = FALSE, row.names = FALSE)
+fwrite(file, newname, sep = "\t", quote = FALSE, row.names = FALSE, na="NA")
 message("Done!")
 
 }
