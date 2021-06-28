@@ -1016,11 +1016,12 @@ Last Reviewed: 2021-06-22
 
 46 datasets were downloaded from GWAS catalog. Since they're quantitative traits (antibody and IgG measurements), I applied sdY correction to them.
 
+
 - Folkersen_33067605
 
 Last Reviewed: 2021-06-24
 
-90 protein datasets were downloaded from GWAS catalog. Since they're quantitative traits, I first computed their allele frequencies using CEU population as a reference and I applied sdY correction to them.
+90 protein datasets were downloaded from GWAS catalog. Since they're quantitative traits, I applied sdY correction to them, using the provided effect allele frequencies.
 
 
 

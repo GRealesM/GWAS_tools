@@ -106,11 +106,11 @@
 # * Added empty field to be recognised as missing data when checking the amount of missing data in key columns.
 # * Added Help menu. 
 # * Added "effect_allele_frequency" to the dictionary, to be replaced by ALT_FREQ.
+# * Fixed bug that would make liftover merging fail (ie. printing all SNPs at the same position) when there's a SNPID column but it contains empty values.
 
 shopt -s nullglob
 
-version='5.2_test'
-
+version='5.2_beta'
 
 ################################################################################
 # Help                                                                         #
@@ -242,7 +242,7 @@ do
  	gsub(/\<p_value\>|\<P.value\>|\<pvalue\>|\<P-value\>|\<pval\>|\<p.value\>|\<Pval\>|\<PVALUE\>|\<Pvalue\>|\<P_VALUE\>|\<P-val\>|\<p\>|\<All.p.value\>|\<P_value\>|\<p-value\>|\<GC-adjusted_P_\>|\<Chi-Squared__P\>|\<P1df\>|\<all_inv_var_meta_p\>/,"P");
  	gsub(/\<Log10p\>/,"LOG10P");
  	gsub(/\<_-log10_p-value\>/,"-LOG10P");
- 	gsub(/\<effect_allele_frequency\>/,"ALT_FREQ");
+ 	gsub(/\<effect_allele_frequency\>|<\maf\>|<\MAF\>/,"ALT_FREQ");
  # Caution! Sometimes "other_allele" means effect allele, check papers prior to run the script, and pre-rename accordingly.
  	gsub(/\<EMP_Beta\>/,"EMP_BETA");
  	gsub(/\<EMP1\>/,"EMP_P");
@@ -360,6 +360,7 @@ echo Ensuring allele columns are uppercase...
 REFCOL=$(awk -F'\t' '{for(i=1;i<=NF;i++) { if($i == "REF") printf(i) } exit 0}' tmp_reheaded_file.tsv)
 ALTCOL=$(awk -F'\t' '{for(i=1;i<=NF;i++) { if($i == "ALT") printf(i) } exit 0}' tmp_reheaded_file.tsv)
 awk -v refcol="$REFCOL" -v altcol="$ALTCOL" 'BEGIN{FS=OFS="\t"}NR>1{$refcol=toupper($refcol); $altcol=toupper($altcol)}1' tmp_reheaded_file.tsv > tmp_schecked.tsv
+
 rm tmp_reheaded_file.tsv
 
 # We can calculate BETA from OR (if OR column exists and is not all NA).
@@ -413,6 +414,8 @@ fi
 # (4) Lastly, we'll check if the SNPID column exists, if not, we'll create one from CHR and BP. For it not to enter in conflict with existing CHR:BP columns, we'll use an underscore instead of a semicolon.
 CHRCOL=$(awk -F'\t' '{ for(i=1;i<=NF;i++) { if($i == "CHR") printf(i) } exit 0 }' tmp_schecked.tsv)
 BPCOL=$(awk -F'\t' ' { for(i=1;i<=NF;i++) { if($i == "BP")  printf(i) } exit 0 }' tmp_schecked.tsv)
+REFCOL=$(awk -F'\t' '{ for(i=1;i<=NF;i++) { if($i == "REF") printf(i) } exit 0 }' tmp_schecked.tsv)
+ALTCOL=$(awk -F'\t' ' { for(i=1;i<=NF;i++) { if($i == "ALT")  printf(i) } exit 0 }' tmp_schecked.tsv)
 
 
 awk -v chrcol="$CHRCOL" -v bpcol="$BPCOL" 'BEGIN{FS=OFS="\t"}{sub(/23/,"X",$chrcol); sub("chr","",$chrcol)}NR>1{$bpcol=sprintf("%i", $bpcol)}1' tmp_schecked.tsv > tmp.tsv && mv tmp.tsv tmp_schecked.tsv
@@ -420,10 +423,22 @@ awk -v chrcol="$CHRCOL" -v bpcol="$BPCOL" 'BEGIN{FS=OFS="\t"}{sub(/23/,"X",$chrc
 
 if [[ "$minSNPID" == 0 ]]; then
  	echo "$f" seem to lack SNPIDs. This is not ideal, but I will create one using CHR and BP
- 	awk -v chrcol="$CHRCOL" -v bpcol="$BPCOL" 'BEGIN{FS=OFS="\t"} {print $0,$chrcol"_"$bpcol}' tmp_schecked.tsv | sed -e 's///' -e '1s/CHR_BP/SNPID/' > tmp.tsv && mv tmp.tsv tmp_schecked.tsv
+ 	awk -v chrcol="$CHRCOL" -v bpcol="$BPCOL" 'BEGIN{FS=OFS="\t"} {print $0,$chrcol"_"$bpcol"_"$refcol"_"$altcol}' tmp_schecked.tsv | sed -e 's///' -e '1s/CHR_BP/SNPID/' > tmp.tsv && mv tmp.tsv tmp_schecked.tsv
 
 fi
-	
+
+ SNPIDCOL=$(awk -F'\t' '{for(i=1;i<=NF;i++) {if($i == "SNPID") printf(i)} exit 0 }' tmp_schecked.tsv)
+ NASNPID=$(awk -v snpidcol="$SNPIDCOL" 'BEGIN{FS=OFS="\t"}NR>1{print $snpidcol}' tmp_schecked.tsv | grep -cP 'NA|^$')
+
+if [[ "$NASNPID" != 0 ]]; then
+	echo "SNPID column seems to have some missing data. We'll use CHR:BP format instead"
+	awk -v snpidcol="$SNPIDCOL" -v chrcol="$CHRCOL" -v bpcol="$BPCOL" -v refcol="$REFCOL" -v altcol="$ALTCOL" 'BEGIN{FS=OFS="\t"}($snpidcol == "NA" || $snpidcol == "") {$snpidcol=$chrcol"_"$bpcol"_"$refcol"_"$altcol}1' tmp_schecked.tsv > tmp.tsv && mv tmp.tsv tmp_schecked.tsv
+        NASNPID=$(awk -v snpidcol="$SNPIDCOL" 'BEGIN{FS=OFS="\t"}NR>1{print $snpidcol}' tmp_schecked.tsv | grep -cP 'NA|^$')
+	if [[ "$NASNPID" != 0 ]]; then
+		echo "SNPID column seems to still have some missing values, removing them"
+		awk -v snpidcol="$SNPIDCOL" 'BEGIN{FS=OFS="\t"} $snpidcol !~ /NA|^$/ ' tmp_schecked.tsv > tmp.tsv && mv tmp.tsv tmp_schecked.tsv 
+	fi
+fi
 
 echo Column sanity check OK. 
 	
@@ -432,7 +447,6 @@ echo Column sanity check OK.
 ## LIFTOVER STAGE
 ###################
 
- SNPIDCOL=$(awk -F'\t' '{for(i=1;i<=NF;i++) {if($i == "SNPID") printf(i)} exit 0 }' tmp_schecked.tsv)
 
 # Prepare input for liftover
 # Extract relevant columns for target file, and create a BED file containing them. This will be the file fed to the liftover script 
