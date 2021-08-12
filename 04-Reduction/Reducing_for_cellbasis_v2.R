@@ -61,18 +61,23 @@ g.class <- function (x, y) {
 # This time we'll use a different strategy, involving array jobs.
 # Since we want to control the size of the batch to be similar in all cases, we'll create another variable to store the index + number of extra jobs
 args <- commandArgs(trailingOnly = TRUE)
-if(length(args) > 0) {
-	args <- as.numeric(args)
-	start_idx  <- args
-	end_idx <- start_idx + 99 # Set the amount of files we want to process each time (and set array job acconrdingly). Here we'll process, for example, files 1-99, so next job can start from 101.
-	if(end_idx > length(dir(pattern="*-hg38.tsv.gz"))){
-		end_idx <- length(dir(pattern="*-hg38.tsv.gz")) 
-	}
-	files <- dir(pattern="*-hg38.tsv.gz")[start_idx:end_idx]
-} else{
-	files <- dir(pattern="*-hg38.tsv.gz") 
-}
+#if(length(args) > 0) {
+#	args <- as.numeric(args)
+#	start_idx  <- args
+#	end_idx <- start_idx + 99 # Set the amount of files we want to process each time (and set array job acconrdingly). Here we'll process, for example, files 1-99, so next job can start from 101.
+#	if(end_idx > length(dir(pattern="*-hg38.tsv.gz"))){
+#		end_idx <- length(dir(pattern="*-hg38.tsv.gz")) 
+#	}
+#	files <- dir(pattern="*-hg38.tsv.gz")[start_idx:end_idx]
+#} else{
+#	files <- dir(pattern="*-hg38.tsv.gz") 
+#}
 
+# We changed the strategy here. If we have many files, we can submit an array job and process each of them individually, we just need to supply the name of the file we want to reduce
+if(length(args) == 1){
+	message("You supplied a file. Processing that file")
+	files  <- args
+}
 
 for(i in files){
 
