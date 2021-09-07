@@ -15,12 +15,14 @@ library(data.table)
 library(magrittr)
 
 
+mpath <- "~/rds/rds-cew54-basis/03-Bases/"
+
 #######################
 # Load essential files
 #######################
 
 # Since files are in hg38 and the basis is in hg19, we use a dirty fix to liftover back to hg19 (easier to do at this stage than in the previous one, due to the huge size of files).
-build_dict <- fread("~/rds/rds-cew54-basis/03-Bases/IMD_basis/Manifest_build_translator.tsv")
+build_dict <- fread(paste0(mpath, "IMD_basis/Manifest_build_translator.tsv"))
 build_dict[, `:=`(pid38=paste(CHR38,BP38,sep=":"), pid=paste(CHR19,BP19,sep=":"))]
 build_dict <- build_dict[,c("pid38", "pid")] 
 
@@ -29,7 +31,7 @@ projected.basis <- copy(cupcake::basis.trait.proj)
 projected.basis[, `:=` (Var.Delta=0, z=0, P=NA)]
 setnames(projected.basis, c("delta", "trait"), c("Delta", "Trait"))
 
-files_to_project  <- dir("~/rds/rds-cew54-basis/03-Bases/IMD_basis/reduced_datasets/", pattern = ".tsv")
+files_to_project  <- dir(paste0(mpath,"IMD_basis/reduced_datasets/"), pattern = ".tsv")
 nfiles <- length(files_to_project)
 Trait <- rep(NA,nfiles)
 nSNP <- rep(NA, nfiles)
@@ -39,7 +41,7 @@ mscomp <- rep(NA,nfiles)
 projected.table <- lapply(files_to_project, function(file){
 	message("Projecting ", file)
 	trait_label <- strsplit(file, "-", fixed = TRUE)[[1]][1]
-	ss.file <- file.path("~/rds/rds-cew54-basis/03-Bases/IMD_basis/reduced_datasets", file)
+	ss.file <- file.path(paste0(mpath,"IMD_basis/reduced_datasets"), file)
 	index <- which(files_to_project == file) 
 	sm <- fread(ss.file)
 	sm <- unique(sm)
@@ -78,13 +80,13 @@ QC.table <- data.table(Trait, nSNP, overall_p, mscomp)
 
 date <- format(Sys.time(), format="%Y%m%d")
 version  <- 1
-projtablename  <- paste("~/rds/rds-cew54-basis/03-Bases/Projections/Projection_IMD_basis_", date, "-v",version, ".tsv", sep="")
-qctablename  <- paste("~/rds/rds-cew54-basis/03-Bases/Projections/QC_IMD_basis_", date, "-v",version, ".tsv", sep="")
+projtablename  <- paste0(mpath,"IMD_basis/Projections/Projection_IMD_basis_", date, "-v",version, ".tsv")
+qctablename  <- paste0(mpath, "IMD_basis/Projections/QC_IMD_basis_", date, "-v",version, ".tsv")
 
 while(file.exists(projtablename)){
   version  <- version + 1
-  projtablename  <- paste("~/rds/rds-cew54-basis/03-Bases/Projections/Projection_IMD_basis_", date, "-v",version, ".tsv", sep="")
-  qctablename  <- paste("~/rds/rds-cew54-basis/03-Bases/Projections/QC_IMD_basis_", date, "-v",version, ".tsv", sep="")
+  projtablename  <- paste0(mpath, "IMD_basis/Projections/Projection_IMD_basis_", date, "-v",version, ".tsv")
+  qctablename  <- paste0(mpath, "IMD_basis/Projections/QC_IMD_basis_", date, "-v",version, ".tsv")
 }
 
 write.table(projected.full, projtablename, sep = "\t", quote = FALSE, row.names = FALSE)

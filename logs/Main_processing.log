@@ -1005,10 +1005,10 @@ Suppl. Table 3. In Excel format. Reference allele was missing and had to be esti
 
 - JIA_LopezIsac_33106285_1
 
-Last Reviewed: 2021-06-21
+Last Reviewed: 2021-09-06
 
-From the paper I concluded that AlleleA = ALT. Used all_OR and computed BETA/SE from P-values. 
-
+From the paper I concluded that AlleleB = ALT. Used frequentist beta and se. 
+Note that initially I misassigned the alleles, although I corrected them for reduced (IMD and cell_basis v2) and processed dataset on 06/09/2021.
 
 - ButlerLaporte_33204752
 

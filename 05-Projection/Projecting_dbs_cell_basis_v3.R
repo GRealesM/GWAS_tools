@@ -13,7 +13,10 @@
 library(data.table)
 library(Matrix)
 library(magrittr)
-load("../../03-Bases/cell_basis_v3_varimax/basis_building/cell-basis-sparse-3.0.RData")
+
+mpath <- "~/rds/rds-cew54-basis/03-Bases/"
+
+load(paste0(mpath, "cell_basis_v3_varimax/basis_building/cell-basis-sparse-3.0.RData"))
 
 # Obsolete
 # We load the traits that were used to create the basis first, then we'll append the rest of traits to that table
@@ -21,7 +24,7 @@ load("../../03-Bases/cell_basis_v3_varimax/basis_building/cell-basis-sparse-3.0.
 #projected.basis[, `:=` (Var.Delta=0, z=0, P=NA)]
 #setnames(projected.basis, c("delta", "trait"), c("Delta", "Trait"))
 
-files_to_project  <- dir("../../03-Bases/cell_basis_v2/reduced_datasets/", pattern = ".tsv")
+files_to_project  <- dir(paste0(mpath,"cell_basis_v2/reduced_datasets/"), pattern = ".tsv")
 nfiles <- length(files_to_project)
 Trait <- rep(NA,nfiles)
 nSNP <- rep(NA, nfiles)
@@ -31,7 +34,7 @@ mscomp <- rep(NA,nfiles)
 projected.table <- lapply(files_to_project, function(file){
 	message("Projecting ", file)
 	trait_label <- strsplit(file, "-", fixed = TRUE)[[1]][1]
-	ss.file <- file.path("../../03-Bases/cell_basis_v2/reduced_datasets", file)
+	ss.file <- file.path(paste0(mpath, "cell_basis_v2/reduced_datasets"), file)
 	index <- which(files_to_project == file) 
 	sm <- fread(ss.file)
 	sm <- unique(sm)
@@ -68,14 +71,15 @@ QC.table <- data.table(Trait, nSNP, overall_p, mscomp)
 
 date <- format(Sys.time(), format="%Y%m%d")
 version  <- 1
-projtablename  <- paste("Projection_cell_basis_v3_", date, "-v",version, ".tsv", sep="")
-qctablename  <- paste("QC_cell_basis_v3_", date, "-v",version, ".tsv", sep="")
+projtablename  <- paste0("Projection_cell_basis_v3_", date, "-v",version, ".tsv")
+qctablename  <- paste0("QC_cell_basis_v3_", date, "-v",version, ".tsv")
 
-while(projtablename %in% dir("../../03-Bases/Projections")){
+while(projtablename %in% dir(paste0(mpath, "cell_basis_v3_varimax/Projections"))){
   version  <- version + 1
-  projtablename  <- paste("Projection_cell_basis_v3_", date, "-v",version, ".tsv", sep="")
-  qctablename  <- paste("QC_cell_basis_v3_", date, "-v",version, ".tsv", sep="")
+  projtablename  <- paste0("Projection_cell_basis_v3_", date, "-v",version, ".tsv")
+  qctablename  <- paste0("QC_cell_basis_v3_", date, "-v",version, ".tsv")
 }
 
-write.table(projected.table, paste0("../../03-Bases/Projections/", projtablename), sep = "\t", quote = FALSE, row.names = FALSE)
-write.table(QC.table, paste0("../../03-Bases/Projections/",qctablename), sep = "\t", quote = FALSE, row.names = FALSE)
+write.table(projected.table, paste0(mpath,"cell_basis_v3_varimax/Projections/", projtablename), sep = "\t", quote = FALSE, row.names = FALSE)
+write.table(QC.table, paste0(mpath, "cell_basis_v3_varimax/Projections/", qctablename), sep = "\t", quote = FALSE, row.names = FALSE)
+
