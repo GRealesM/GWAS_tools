@@ -526,15 +526,43 @@ echo Column sanity check OK.
 # Note: 3 = hg18, 5 = hg19, and 7 = hg38
  if [ $CHOSEN_BUILD -eq 3 ]; then
  	echo "$f" seems to be in hg18.
+	# Prepare input for liftover
+	# Extract relevant columns for target file, and create a BED file containing them. This will be the file fed to the liftover script 
+	 echo Preparing input for liftover...
+	 cat tmp_schecked.tsv | awk  -v snpidcol="$SNPIDCOL" -v chrcol="$CHRCOL" -v bpcol="$BPCOL" 'BEGIN{FS=OFS="\t"}{print "chr"$chrcol, $bpcol, (($bpcol + 1)), $snpidcol }' | tail -n+2 > ${FILEBASENAME}.bed
+	# In addition, we'll need to edit the file to make it "mergeable", since merge command will naturally try to merge using the first column in each file. We'll guarantee that the first column in both files to be SNPID.
+	cp tmp_schecked.tsv tmp_formerging0.tsv
+	# We reorder the columns only if SNPID is not the first one
+	 if [[ "$SNPIDCOL" -gt 1 ]]; then
+ 		paste <(cut -f"${SNPIDCOL}" tmp_formerging0.tsv ) <(cut -f1-$((SNPIDCOL - 1)),$((SNPIDCOL + 1))- tmp_formerging0.tsv) > tmp_formerging1.tsv 
+		rm tmp_formerging0.tsv
+	 else
+ 			mv tmp_formerging0.tsv tmp_formerging1.tsv
+	 fi
 	sed -e '1s/\<CHR\>/CHR18/' -e '1s/\<BP\>/BP18/' tmp_formerging1.tsv > tmp.tsv && mv tmp.tsv tmp_formerging1.tsv
  	echo Liftovering...
  	"$scriptpath"liftOver "${FILEBASENAME}".bed "$scriptpath"hg18ToHg38.over.chain.gz "${FILEBASENAME}"-lo-output.bed "${FILEBASENAME}"-unlifted.bed
- elif [ $CHOSEN_BUILD -eq 5 ]; then
+
+elif [ $CHOSEN_BUILD -eq 5 ]; then
  	echo "$f" seems to be in hg19.
+	# Prepare input for liftover
+	# Extract relevant columns for target file, and create a BED file containing them. This will be the file fed to the liftover script 
+	 echo Preparing input for liftover...
+	 cat tmp_schecked.tsv | awk  -v snpidcol="$SNPIDCOL" -v chrcol="$CHRCOL" -v bpcol="$BPCOL" 'BEGIN{FS=OFS="\t"}{print "chr"$chrcol, $bpcol, (($bpcol + 1)), $snpidcol }' | tail -n+2 > ${FILEBASENAME}.bed
+	# In addition, we'll need to edit the file to make it "mergeable", since merge command will naturally try to merge using the first column in each file. We'll guarantee that the first column in both files to be SNPID.
+	cp tmp_schecked.tsv tmp_formerging0.tsv
+	# We reorder the columns only if SNPID is not the first one
+	 if [[ "$SNPIDCOL" -gt 1 ]]; then
+ 		paste <(cut -f"${SNPIDCOL}" tmp_formerging0.tsv ) <(cut -f1-$((SNPIDCOL - 1)),$((SNPIDCOL + 1))- tmp_formerging0.tsv) > tmp_formerging1.tsv 
+		rm tmp_formerging0.tsv
+	 else
+ 			mv tmp_formerging0.tsv tmp_formerging1.tsv
+	 fi
 	sed -e '1s/\<CHR\>/CHR19/' -e '1s/\<BP\>/BP19/' tmp_formerging1.tsv > tmp.tsv && mv tmp.tsv tmp_formerging1.tsv
  	echo Liftovering...
  	"$scriptpath"liftOver "${FILEBASENAME}".bed "$scriptpath"hg19ToHg38.over.chain.gz "${FILEBASENAME}"-lo-output.bed "${FILEBASENAME}"-unlifted.bed
- elif [ $CHOSEN_BUILD -eq 7 ]; then
+
+elif [ $CHOSEN_BUILD -eq 7 ]; then
  	echo "$f" is in hg38 already, skipping liftover step...
  	sed -e '1s/\<CHR\>/CHR38/' -e '1s/\<BP\>/BP38/' tmp_schecked.tsv | gzip  > ../"${FILEBASENAME}"-hg38.tsv.gz
  	cd .. && rm -rf "$TMPDIR"
@@ -545,21 +573,6 @@ echo Column sanity check OK.
  	continue 
  fi
  
-# Prepare input for liftover
-# Extract relevant columns for target file, and create a BED file containing them. This will be the file fed to the liftover script 
- echo Preparing input for liftover...
- cat tmp_schecked.tsv | awk  -v snpidcol="$SNPIDCOL" -v chrcol="$CHRCOL" -v bpcol="$BPCOL" 'BEGIN{FS=OFS="\t"}{print "chr"$chrcol, $bpcol, (($bpcol + 1)), $snpidcol }' | tail -n+2 > ${FILEBASENAME}.bed
-
-# In addition, we'll need to edit the file to make it "mergeable", since merge command will naturally try to merge using the first column in each file. We'll guarantee that the first column in both files to be SNPID.
- cp tmp_schecked.tsv tmp_formerging0.tsv
-
-# We reorder the columns only if SNPID is not the first one
- if [[ "$SNPIDCOL" -gt 1 ]]; then
- 	paste <(cut -f"${SNPIDCOL}" tmp_formerging0.tsv ) <(cut -f1-$((SNPIDCOL - 1)),$((SNPIDCOL + 1))- tmp_formerging0.tsv) > tmp_formerging1.tsv 
- 	rm tmp_formerging0.tsv
- else
- 	mv tmp_formerging0.tsv tmp_formerging1.tsv
- fi
  
  awk 'BEGIN{FS=OFS="\t"}{sub("chr", "",$1); print $4,$1,$2}' "${FILEBASENAME}"-lo-output.bed | sed '1i SNPID\tCHR38\tBP38' > "${FILEBASENAME}"-lo-output2.bed
  # New joining command from 5.0 on

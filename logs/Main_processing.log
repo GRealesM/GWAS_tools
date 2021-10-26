@@ -1036,3 +1036,31 @@ I wrote a script to download all of them (slurm_downloadbbj), which came in zip 
 Upon decompression, I realised that some datasets were split between autosomes and chromosome X. Also, some of there were quantitative traits with their respective GWAS performed using BOLT-LMM. I applied sdY adjustment using provided allele frequencies and N to these files to ensure sdY = 1. I wrote Sakaue_preprocess.R for the task.
 Finally, I pipelined all datasets using a new version of the pipeline (v5.3), which can take a single file as an argument, thus allowing me to pipeline files individually using array job, thus releasing me and future users from the burden of calculating how long a number of files will take - and risking running out of time.
 I reduced and projected all datasets.
+
+- Rothwell_up Myositis 
+
+Last Reviewed: 2021-10-26
+
+
+Simon Rothwell sent us their Immunochip imputted Myositis datasets, see attached e-mail below:
+
+```
+Find dropbox link below containing summary statistics for IIM Immunochip imputation in total IIM (n= 2,565 cases) and subgroups PM (n=903), DM (n=817), JDM (n=508), IBM (n=252), and patients with anti-Jo1 autoantibodies (n=311). Summary statistics were computed using SNPTEST with details in metadata included in the header of the results files – but any more questions don’t hesitate to ask.
+
+Just to note, some of the OR are flipped due to coding of allele_A/B in SNPTEST. This can be figured out from the MAF, however if this makes an impact in your PCA, we can discuss flipping this in the raw data. We only noticed this post-imputation.
+
+https://www.dropbox.com/sh/dot55l6f8c1846d/AADkbknS1nVMrPwc6ojDp7Jia?dl=0
+```
+
+I downloaded the zip file (which can be found in 97-Archive/IIM_Rothwell_20211026_raw.zip), extracted 6 files, removed first 13/14 lines containing stuff by SNPTEST.
+I checked that A = REF and B = ALT by comparing "Total" file with MYO_Miller dataset. Then I applied the following line to preprocess them:
+
+for i in *.out; do echo $i; TT=$(echo $i | sed -r 's/IIM_Imputation_SNPTEST_Additive_([A-Za-z0-9]+).out/\1/'); sed -e '1s/alleleA/REF/' -e '1s/alleleB/ALT/' -e '1s/frequentist_add_pvalue/P/' -e '1s/frequentist_add_beta_1/BETA/' -e '1s/frequentist_add_se_1/SE/' -e '1s/ all_OR / OR /' -e '1s/all_maf/ALT_FREQ/' $i > "$TT"_Rothwell_up_1-raw.tsv; gzip "$TT"_Rothwell_up_1-raw.tsv; done
+
+Then, I processed them using pipeline v5.3.2_beta.
+
+
+
+
+
+
