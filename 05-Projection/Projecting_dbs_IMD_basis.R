@@ -4,6 +4,11 @@
 
 # Introduction: This code is meant to project our processed datasets (found at 04-Liftovered/) onto the IMDbasis
 
+###############################################
+######   NEWS                            ######
+###############################################
+
+# - On 2021-11-04 I included some lines to identify duplicated pids and remove them, in case they appear. I also replace empty strings by NA.
 
 ##############################################
 ### LOAD LIBRARIES AND SET REQUIRED FUNCTIONS
@@ -14,8 +19,12 @@ library(cupcake)
 library(data.table)
 library(magrittr)
 
-
+date <- format(Sys.time(), format="%Y%m%d")
 mpath <- "~/rds/rds-cew54-basis/03-Bases/"
+
+#Create log file
+logname <- paste0("logs/log_IMD_",date,".txt")
+file.create(logname)
 
 #######################
 # Load essential files
@@ -44,8 +53,20 @@ projected.table <- lapply(files_to_project, function(file){
 	ss.file <- file.path(paste0(mpath,"IMD_basis/reduced_datasets"), file)
 	index <- which(files_to_project == file) 
 	sm <- fread(ss.file)
+	# Some checks
 	sm <- unique(sm)
-	sm <- na.omit(sm)
+	sm[sm == ""] <- NA # Some missing data might pass as empty string. This will fix that	
+	sm <- na.omit(sm, cols = c("pid38", "BETA", "SE", "P"))
+	dups <- sm$pid38[duplicated(sm$pid38)]
+
+	if(length(dups) > 0){
+		dupmessage= "This file has duplicated pids. I removed them prior to projection. You might want to check it."
+		message(dupmessage)
+		# Write to log
+		write(paste0(ss.file,". ",dupmessage), logname, append=TRUE)
+		sm <- sm[!pid38 %in% dups] # Remove all duplicated instances, to be safe
+	}
+	
 	sm <- merge(sm, build_dict)
 
 	# A bit of QC 
@@ -54,7 +75,9 @@ projected.table <- lapply(files_to_project, function(file){
 
   	projected.userdata <- tryCatch(expr = project_sparse(beta=sm$BETA, seb=sm$SE, pid=sm$pid)[,trait:=trait_label][],
   	                      error =function(e) {
-				      message("Projection for the above file had non-zero exit status, please check. Jumping to next file...")
+				      failmessage <- "Projection for this file had non-zero exit status, please check. Jumping to next file..."
+				      message(failmessage)
+				      write(paste0(ss.file,". ",failmessage), logname, append=TRUE)
 				      return(NULL)})
   	if(is.null(projected.userdata)) {
 		return(NULL)
@@ -78,7 +101,6 @@ projected.full  <- rbind(projected.basis[,.(PC, Delta, Var.Delta, z, P, Trait)],
 
 QC.table <- data.table(Trait, nSNP, overall_p, mscomp)
 
-date <- format(Sys.time(), format="%Y%m%d")
 version  <- 1
 projtablename  <- paste0(mpath,"IMD_basis/Projections/Projection_IMD_basis_", date, "-v",version, ".tsv")
 qctablename  <- paste0(mpath, "IMD_basis/Projections/QC_IMD_basis_", date, "-v",version, ".tsv")

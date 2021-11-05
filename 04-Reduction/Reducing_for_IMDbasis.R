@@ -86,6 +86,9 @@ args <- commandArgs(trailingOnly = TRUE)
 if(length(args) == 1){
 	message("You supplied a file. Processing that file")
 	files  <- args
+} else {
+	message("Processing all (*-hg38.tsv.gz) files")
+        files  <- dir(pattern="*-hg38.tsv.gz") # If we have only a few files, by not supplying any argument we can process them all in one go.
 }
 
 

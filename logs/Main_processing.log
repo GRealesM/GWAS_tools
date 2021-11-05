@@ -1057,6 +1057,8 @@ I checked that A = REF and B = ALT by comparing "Total" file with MYO_Miller dat
 
 for i in *.out; do echo $i; TT=$(echo $i | sed -r 's/IIM_Imputation_SNPTEST_Additive_([A-Za-z0-9]+).out/\1/'); sed -e '1s/alleleA/REF/' -e '1s/alleleB/ALT/' -e '1s/frequentist_add_pvalue/P/' -e '1s/frequentist_add_beta_1/BETA/' -e '1s/frequentist_add_se_1/SE/' -e '1s/ all_OR / OR /' -e '1s/all_maf/ALT_FREQ/' $i > "$TT"_Rothwell_up_1-raw.tsv; gzip "$TT"_Rothwell_up_1-raw.tsv; done
 
+I noticed that chromosomes 1-9 were coded as 01-09, which caused problems at the pipeline stage. I fixed it using fix_Rothwell.R.
+
 Then, I processed them using pipeline v5.3.2_beta.
 
 

@@ -1,0 +1,13 @@
+~/rds/rds-cew54-basis/03-Bases/IMD_basis/reduced_datasets/ANS_Cortes_23749187_1-ft.tsv. This file has duplicated pids. I removed them prior to projection. You might want to check it.
+~/rds/rds-cew54-basis/03-Bases/IMD_basis/reduced_datasets/CD3TC_Ferreira_20045101_1-ft.tsv. This file has duplicated pids. I removed them prior to projection. You might want to check it.
+~/rds/rds-cew54-basis/03-Bases/IMD_basis/reduced_datasets/CD4CD8_Ferreira_20045101_1-ft.tsv. This file has duplicated pids. I removed them prior to projection. You might want to check it.
+~/rds/rds-cew54-basis/03-Bases/IMD_basis/reduced_datasets/CD4TC_Ferreira_20045101_1-ft.tsv. This file has duplicated pids. I removed them prior to projection. You might want to check it.
+~/rds/rds-cew54-basis/03-Bases/IMD_basis/reduced_datasets/CD8TC_Ferreira_20045101_1-ft.tsv. This file has duplicated pids. I removed them prior to projection. You might want to check it.
+~/rds/rds-cew54-basis/03-Bases/IMD_basis/reduced_datasets/CEL_Trynka_22057235_1-ft.tsv. This file has duplicated pids. I removed them prior to projection. You might want to check it.
+~/rds/rds-cew54-basis/03-Bases/IMD_basis/reduced_datasets/LB19C_Ferreira_20045101_1-ft.tsv. This file has duplicated pids. I removed them prior to projection. You might want to check it.
+~/rds/rds-cew54-basis/03-Bases/IMD_basis/reduced_datasets/MDD_Wray_29700475_2-ft.tsv. Projection for this file had non-zero exit status, please check. Jumping to next file...
+~/rds/rds-cew54-basis/03-Bases/IMD_basis/reduced_datasets/NAR_Faraco_23459209_1-ft.tsv. This file has duplicated pids. I removed them prior to projection. You might want to check it.
+~/rds/rds-cew54-basis/03-Bases/IMD_basis/reduced_datasets/NK56C_Ferreira_20045101_1-ft.tsv. This file has duplicated pids. I removed them prior to projection. You might want to check it.
+~/rds/rds-cew54-basis/03-Bases/IMD_basis/reduced_datasets/PSO_Tsoi_23143594_1-ft.tsv. This file has duplicated pids. I removed them prior to projection. You might want to check it.
+~/rds/rds-cew54-basis/03-Bases/IMD_basis/reduced_datasets/T1D_OnengutGumuscu_25751624_1-ft.tsv. This file has duplicated pids. I removed them prior to projection. You might want to check it.
+~/rds/rds-cew54-basis/03-Bases/IMD_basis/reduced_datasets/T2D_Gaulton_26551672_1-ft.tsv. Projection for this file had non-zero exit status, please check. Jumping to next file...
