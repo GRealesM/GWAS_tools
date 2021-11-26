@@ -27,7 +27,7 @@ mpath <- "~/rds/rds-cew54-basis/03-Bases/"
 load(paste0(mpath, "cell_basis_v3_varimax/basis_building/cell-basis-sparse-3.0.RData"))
 
 #Create log file
-logname <- paste0("logs/log_CB3_",date,".txt")
+logname <- paste0(mpath,"cell_basis_v3_varimax/Projections/logs/log_CB3_",date,".txt")
 file.create(logname)
 
 # Obsolete

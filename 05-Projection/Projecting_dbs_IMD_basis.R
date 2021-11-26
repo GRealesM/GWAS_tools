@@ -23,7 +23,7 @@ date <- format(Sys.time(), format="%Y%m%d")
 mpath <- "~/rds/rds-cew54-basis/03-Bases/"
 
 #Create log file
-logname <- paste0("logs/log_IMD_",date,".txt")
+logname <- paste0(mpath, "IMD_basis/Projections/logs/log_IMD_",date,".txt")
 file.create(logname)
 
 #######################
