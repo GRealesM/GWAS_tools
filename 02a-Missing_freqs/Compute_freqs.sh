@@ -1,12 +1,15 @@
 #!/bin/bash
 
 # Compute missing allele frequencies using a selected population from 1000 Genomes project
-# Version 1.0
+# Version 2.0
 #
 # This script is intended to extract the allele frequencies of GWAS summary statistics datatests from 1000 genomes data.
 # It requires 2 pieces of data, -f the file to be processed, and -p the 1000 genomes population from which to compute the frequencies {ACB,ASW,BEB,CDX,CEU,CHB,CHS,CLM,ESN,FIN,GBR,GIH,GWD,IBS,ITU,JPT,KHV,LWK,MSL,MXL,PEL,PJL,PUR,STU,TSI,YRI}.
 # IMPORTANT NOTE 1: Files should be in hg19, like 1000 genomes Phase III files.
 # IMPORTANT NOTE 2: Genomic coordinates (hg19) should be denoted by CHR/BP headers.
+#
+# Version 2.0 Updates
+# - Changed file names to generalise the script and run it for more files in parallel.
 
 ################################################################################
 # Help                                                                         #
@@ -47,7 +50,7 @@ CHRCOL=$(zcat $FILE | awk -F'\t' ' {for(i=1;i<=NF;i++) { if($i == "CHR19") print
 BPCOL=$(zcat $FILE | awk -F'\t' '{for(i=1;i<=NF;i++) { if($i == "BP19") printf(i) } exit 0}')
 FILENAME=$(echo $FILE | sed -e 's/.tsv.gz//' -e 's/-.*//') 
 
-zcat $FILE | awk -F"\t" -v chrcol="$CHRCOL" -v bpcol="$BPCOL" 'NR>1{print $chrcol,$bpcol,$bpcol,$bpcol}' > hg19snps.txt
+zcat $FILE | awk -F"\t" -v chrcol="$CHRCOL" -v bpcol="$BPCOL" 'NR>1{print $chrcol,$bpcol,$bpcol,$bpcol}' > "$FILENAME"_hg19snps.txt
 
 # Now we'll get the sample IDs for our population of interest. For that we'll use the integrated_call_samples_v3.20130502.ALL.panel file.
 # Please note that this panel makes reference to phase 3 1000 genomes (in hg19). I just couldn't copy it to the appropriate reference folder.
@@ -62,14 +65,14 @@ echo -e "CHR19\tBP19\tSNPID\tREF\tALT\tALT_FREQ\tOBS_CT" > Freqs_"$FILENAME".txt
 for chr in {1..22};
 do
 	echo "Extracting from chr$chr..."
-	grep -P "^"$chr" " hg19snps.txt > tmpsnps.txt
-	plink2 --bfile ~/rds/rds-cew54-basis/95-1000genomes/reference_hg19/chr$chr --keep ~/rds/rds-cew54-basis/GWAS_tools/02a-Missing_freqs/"$POP"_samples.txt --extract range tmpsnps.txt --freq cols=+pos --out temp
-	tail -n+2 temp.afreq >> Freqs_"$FILENAME".txt
+	grep -P "^"$chr" " "$FILENAME"_hg19snps.txt > "$FILENAME"_tmpsnps.txt
+	plink2 --bfile ~/rds/rds-cew54-basis/95-1000genomes/reference_hg19/chr$chr --keep ~/rds/rds-cew54-basis/GWAS_tools/02a-Missing_freqs/"$POP"_samples.txt --extract range "$FILENAME"_tmpsnps.txt --freq cols=+pos --out "$FILENAME"_temp
+	tail -n+2 "$FILENAME"_temp.afreq >> Freqs_"$FILENAME".txt
 done
 
 
 Rscript --vanilla ~/rds/rds-cew54-basis/GWAS_tools/02a-Missing_freqs/Mergeback.R $FILE Freqs_"$FILENAME".txt
-rm temp* hg19snps.txt tmpsnps.txt Freqs_*
+rm "$FILENAME"_temp* "$FILENAME"_hg19snps.txt "$FILENAME"_tmpsnps.txt Freqs_"$FILENAME"*
 
 echo "Done!"
 

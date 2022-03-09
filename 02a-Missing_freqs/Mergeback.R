@@ -36,19 +36,19 @@ freqs <- fread(args[2])
 file[, pid:=paste(CHR19,BP19, sep=":")][,c("REF","ALT"):=list(toupper(REF),toupper(ALT))]
 freqs[, pid:=paste(CHR19,BP19, sep=":")]
 
-merged  <- merge.data.table(file, freqs[,c("pid", "REF", "ALT", "ALT_FREQ")], by = "pid", all.x=TRUE, suffix = c("", ".1KG"))
-message(length(merged$ALT_FREQ[is.na(merged$ALT_FREQ)]), " SNPs couldn't have their allele frequencies computed.") 
+dd  <- merge.data.table(file[,c("pid", "REF", "ALT")], freqs[,c("pid", "REF", "ALT", "ALT_FREQ")], by = "pid", all.x=TRUE, suffix = c("", ".1KG")) # Extract alleles and pids to compare
 # Remove SNPs without freqs
-merged  <- na.omit(merged, cols = "ALT_FREQ")
+dd  <- na.omit(dd, cols = "ALT_FREQ")
+
 
 # Let's check if all alleles match. Unlikely unless the dataset is very small and ideal
-if(!all(merged$ALT == merged$ALT.1KG)){
+if(!all(dd$ALT == dd$ALT.1KG)){
 	# Sometimes there are trialellic and tetra-allelic SNPs. Those are hard to make a decision on, so we'll remove them
-	merged <- merged[!duplicated(pid),]
+	dd <- dd[!duplicated(pid),]
 	# Let's remove all fixed alleles
-	merged <- merged[!(ALT_FREQ == 0 | ALT_FREQ == 1), ]
+	dd <- dd[!(ALT_FREQ == 0 | ALT_FREQ == 1), ]
 
-	flip.class <- allele.diag.2alleles(merged)
+	flip.class <- allele.diag.2alleles(dd)
 	
 	alleles.rev <- flip.class == "reverse"
 	alleles.comp <- flip.class == "comp"
@@ -56,21 +56,23 @@ if(!all(merged$ALT == merged$ALT.1KG)){
 	alleles.impossible <- flip.class == "impossible" 
 
 	# Flip ALT_FREQ when necessary
-	merged[alleles.rev, ALT_FREQ:=1-ALT_FREQ]
-	merged[alleles.revcomp, ALT_FREQ:=1-ALT_FREQ]
+	dd[alleles.rev, ALT_FREQ:=1-ALT_FREQ]
+	dd[alleles.revcomp, ALT_FREQ:=1-ALT_FREQ]
 	# Remove impossibles 
-	merged <- merged[!alleles.impossible,]
+	dd <- dd[!alleles.impossible,]
 	
 	# Remove G/C and A/T SNPs if there are complemented or revcomp SNPs
 	if(length(flip.class[alleles.revcomp]) +  length(flip.class[alleles.comp]) > 0){
-	  	merged[,alleles:=paste(REF,ALT,sep="/")]
+	  	dd[,alleles:=paste(REF,ALT,sep="/")]
 		alleles.toremove <- c("A/T","T/A","G/C","C/G")
-		merged  <- merged[!alleles %in% alleles.toremove,]
-		merged[,alleles:=NULL]
+		dd  <- dd[!alleles %in% alleles.toremove,]
+		dd[,alleles:=NULL]
 	}
 }
 
-merged[,c("REF.1KG", "ALT.1KG","pid"):=NULL]
+message(nrow(file) - nrow(dd), " SNPs couldn't have their allele frequencies computed or their alleles aligned in ", args[1],".") 
+
+merged <- merge.data.frame(file, dd[, c("pid", "REF", "ALT", "ALT_FREQ")], by=c("pid", "REF", "ALT"), all.x=TRUE )
 
 basename  <- strsplit(args[1], split=c("-|\\.tsv"))[[1]][1]
 fwrite(merged, paste(basename, "-withfreqs.tsv.gz", sep=""), sep="\t")

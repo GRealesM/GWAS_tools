@@ -325,9 +325,11 @@ This file had SE missing. I realized that for some reason liftOver failed in thi
 
 - AIS_Kou_31417091_1, CD_Brant_27693347_1, EOE_Kottyan_25017104_1, IBD_Brant_27693347_1, IGAD_Bronson_27723758_1, MDD_CONVERGE_26176920_1, MS_IMSGC_30343897_1, MTX_Taylor_29795407_1, NMO_Estrada_29769526_1, NMOIGGn_Estrada_29769526_1, NMOIGGp_Estrada_29769526_1, PSO_Hirata_29031612_1, RA_Okada_24390342_1, RA_Okada_24390342_2, SLE_Julia_29848360_2, T2D_DIAGRAM_24509480_1, T2D_Gaulton_26551672_1, T2D_Morris_22885922_1, &  UC_Brant_27693347_1
 
-Last Reviewed: 2020-02-11
+Last Reviewed: 2022-03-09
 
 These files lacked SE. I calculated it using SE_Calc.
+
+Update on 2022-03-09: We needed ALT_FREQ for quant_OR, so I used Compute_freqs.sh and CEU population to estimate it.
 
 
 - MDD_Wray_29700475_1
@@ -554,6 +556,9 @@ These files lacked one of the two alleles. Assuming that the reported allele is 
 - fix-alleles.R
 Then I repipelined (4.4) the files and re-reduced.
 
+Update on 2022-03-09: We needed ALT_FREQ for quant_OR. I liftovered to get the hg19 coordinates and then estimated ALT_FREQ using Compute_freqs.sh and CEU population.
+
+
 
 - UC_Julia_25082827_1
 
@@ -567,7 +572,7 @@ These scripts would allow for detection of not only flipped, but also complement
 
 - VITD_Traglia_32047095
 
-Last Reviewed: 2020-07-31
+Last Reviewed: 2022-03-09
 
 These files lacked one allele too, so I processed them using the two scripts.
 zcat VITD_Traglia_32047095_1.tsv.gz | sed -e '1s/RSID/SNPID/' -e '1s/A1/ALT/' -e 's/;/\t/g' | gzip > tmp.tsv.gz && mv tmp.tsv.gz VITD_Traglia_32047095_1.tsv.gz
@@ -578,9 +583,12 @@ zcat VITD_Traglia_32047095_4.tsv.gz | sed -e '1s/RSID/SNPID/' -e '1s/A1/ALT/' -e
 Update 2020-07-31: I noticed a flaw in my fix_one_allele_problem scripts, so I updated them. Then, I took UC_Julia_1 file in 02, removed REF and run the new scripts.
 These scripts would allow for detection of not only flipped, but also complement and reverse-complement alleles. They will also remove ambiguous alleles.
 
+Update on 2022-03-09: We needed ALT_FREQ for quant_OR. I estimated ALT_FREQ using Compute_freqs.sh and CEU population.
+
+
 - Ferreira_20045101
 
-Last Reviewed: 2020-03-20
+Last Reviewed: 2022-03-09
 
 These files lacked one allele too, so I processed them using the two scripts.
 I first update the name of the files
@@ -600,6 +608,7 @@ zcat NK56C_Ferreira_20045101_1.tsv.gz | sed -e '1s/SNP/SNPID/' -e 's/A1/ALT/' -e
 And processed them with the two scripts.
 NOTE: I realized that I had downloaded the "harmonised" file from GWAS catalog for CD4CD8. This led to issues during processing, so I redownloaded the original file (ftp://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/FerreiraMA_20045101_GCST000553/CD4_8.assoc.gz).
 
+Update on 2022-03-09: We needed ALT_FREQ for quant_OR. I liftovered to get the hg19 coordinates and then estimated ALT_FREQ using Compute_freqs.sh and CEU population.
 
 - RD_Boutin_31816047
 
@@ -660,7 +669,7 @@ New denomination: RETC (Reticulocyte count)
 
 - IMMED_Traglia_30134952
 
-Last Reviewed: 2020-07-31
+Last Reviewed: 2022-03-09
 
 These 4 files contained data for multiple cytokines, as well as one-allele-only problem.
 I wrote a script to first split them by cytokine (see 93-Fixing_stuff/Special_cases/...Traglia..), and them went through the cytokine names to check for the need to generate new traits in our dictionary or just rename the files. I  To make things easier, I renamed any cytokine that had an existing trait already in our dictionary (see names and equivalents in tableS2 in the paper).
@@ -669,6 +678,11 @@ Once I did this, I pipelined the files using v4.10.
 
 Update 2020-07-31: I noticed a flaw in my fix_one_allele_problem scripts, so I updated them. Then, I took Traglia files in 02, removed REF and run the new scripts.
 These scripts would allow for detection of not only flipped, but also complement and reverse-complement alleles. They will also remove ambiguous alleles.
+
+Update 2022-03-09: We needed to ALT_FREQ for Quant_OR approach, and these files didn't have it, so I updated Compute_freqs.sh (and Mergeback.R, to avoid removing SNPs without freqs from the final files) and applied it to these files, using CEU as the reference population.
+
+
+
 
 - AST_Daya_30787307
 
@@ -1060,6 +1074,24 @@ for i in *.out; do echo $i; TT=$(echo $i | sed -r 's/IIM_Imputation_SNPTEST_Addi
 I noticed that chromosomes 1-9 were coded as 01-09, which caused problems at the pipeline stage. I fixed it using fix_Rothwell.R.
 
 Then, I processed them using pipeline v5.3.2_beta.
+
+
+
+- OConnor (31189108)
+
+Last Reviewed: 2022-03-09
+
+We needed to compute ALT_FREQ for O'Connor for quant_OR computation. The files did not have it pre-computed, but they came with genotype counts (n_AA, n_AB, and n_BB).
+I wrote `compute_ALTFREQ_OConnor.R` to compute N and ALT_FREQ from the files. 
+
+
+- SinnotArmstrong (33462484)
+
+Last Reviewed: 2022-03-09
+
+These files did not have any special requirement, and were processed normally.
+However, we needed ALT_FREQ to estimate quant_OR, so we used Compute_freqs.sh and GBR to do so.
+
 
 
 
