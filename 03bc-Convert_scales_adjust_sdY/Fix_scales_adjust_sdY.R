@@ -10,8 +10,16 @@ library(IMDtools)
 # devtools::install_github("tidyverse/googlesheets4")
 library(googlesheets4)
 
+# Create tmp directory
+if(!dir.exists("tmp")) dir.create("tmp")
+
 # Get all help that you can
 setDTthreads(0)
+
+
+
+# Get file from command line
+i <- commandArgs(trailingOnly=TRUE)
 
 # Since we need extra information (N0 and N1), we'll obtain it from our Main_table
 gs4_deauth()
@@ -19,8 +27,7 @@ message("Fetching metadata...")
 metadata <- read_sheet("https://docs.google.com/spreadsheets/d/16B4ANehcS4psdAFReTBQUJLYXuf5_RrpmjSPaASa2Nw/edit?usp=sharing", sheet = 1)[,c("File_ID", "N0", "N1")]
 metadata <- data.table(metadata)
 
-for (i in dir(pattern= "*.tsv.gz")){
-file <- fread(i)
+file <- fread(i, tmpdir="tmp")
 filemetadata <- metadata[File_ID == i,]
 if(nrow(filemetadata) != 1) stop("File couldn't be matched to metadata. Please check.")
 N0 <- filemetadata$N0
@@ -36,4 +43,3 @@ newname <- paste(strsplit(i, split = "-")[[1]][1], "-bsadj.tsv.gz", sep="")
 fwrite(file, newname, sep = "\t", quote = FALSE, row.names = FALSE, na="NA")
 message("Done!")
 
-}

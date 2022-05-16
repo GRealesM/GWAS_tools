@@ -975,7 +975,7 @@ Rscript ../GWAS_tools/03bc-Convert_scales_adjust_sdY/Fix_scales_adjust_sdY.R
 
 - Chen_32888493
 
-Last Reviewed: 2020-09-24
+Last Reviewed: 2022-05-04
 
 These datasets correspond to 15 Blood cell trait multi-cohort and trans-ethnic meta-analysis.
 They represent meta-analyses by cohort and trans-ethnic, so I used the following numbering for the files:
@@ -997,6 +997,26 @@ I downloaded all available from their original source, and checked the headers, 
 Also, GWAMA files showed to have rs_number as pids in CHR:BP_REF_ALT format, so I wrote a script for those cases: fix_chen.R
 
 After fixing and pipelining (v5.1), I run Fix_scales_adjust_sdY for all 89 files.
+
+Update (May 2022): While making a new basis, I noticed that some MR-MEGA files (see below) were smaller, and lacked part of the file. Something must have happened during processing, so I decided to download the files and process them again. I processed them using pipeline 5.3.2_beta and ran Fix_scales_adjust_sdY for both of them. Now they seem to be complete.
+
+Files that needed to be fixed:
+MCHC_Chen_32888493_5-hg38.tsv.gz
+HBC_Chen_32888493_5-hg38.tsv.gz
+RBCW_Chen_32888493_5-hg38.tsv.gz
+HEMAT_Chen_32888493_2-hg38.tsv.gz
+HBC_Chen_32888493_2-hg38.tsv.gz
+LEUC_Chen_32888493_2-hg38.tsv.gz
+MCH_Chen_32888493_2-hg38.tsv.gz
+LYMC_Chen_32888493_2-hg38.tsv.gz
+MCHC_Chen_32888493_2-hg38.tsv.gz
+PLAV_Chen_32888493_5-hg38.tsv.gz
+HEMAT_Chen_32888493_5-hg38.tsv.gz
+PLAV_Chen_32888493_2-hg38.tsv.gz
+RBCW_Chen_32888493_6-hg38.tsv.gz
+PLAV_Chen_32888493_6-hg38.tsv.gz
+
+
 
 - T1D_Inshaw_up_1
 
