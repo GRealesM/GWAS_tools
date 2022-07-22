@@ -1,0 +1,13 @@
+#############################
+#######   PanUKBB   #########
+#############################
+
+PanUKBB, a project that performed GWASs over 7,000+ phenotypes using UKBB data, was released on 16/06/2020.
+Like we did with Neale files, we intended to download some files of interest to us and filter them by our 300k SNP manifest.
+I selected 1,550+ phenotypes from the panUKBB manifest (modified and available at https://docs.google.com/spreadsheets/d/1p3O5EoF8uIVKgtfzVKNmXecrVPw5vdH1nyBti5L5F1s/edit?usp=sharing), including 20002 traits, COVID traits, biomarkers, some continuous traits and phecodes. 
+In general, I excluded icd10, prescriptions, and phenotypes from follow-up interviews that I considered less interesting (and we can always come back and download them later!). For COVID-19 traits with multiple GWAS performed in different stages, I kept those with the largest N (likely most recent, too).
+I prepared new traitIDs (see name column at the manifest) to try and keep original encoding as much as I could.
+
+One of the characteristics of this set is that they performed GWAS in separate populations as well as meta-analyses with varying number of populations (ie. 2-6). Since our interest is to extract as much power as we can, when a meta-analysis is available, we will consider meta-analysis values, rather than individual population values. The step prior to pipelining is to rehead each file appropriately. For that I wrote a couple of scripts, one that would replace beta_meta, se_meta, and pval_meta to BETA, SE, and P, respectively in meta-analysis files (see onlyMETA.txt) and likewise (beta_EUR, se_EUR, and pval_EUR) for EUR only files (see onlyEUR.txt). There were 4 AFR-only files, which I manually edited accordingly.
+
+

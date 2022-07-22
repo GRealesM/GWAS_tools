@@ -1,0 +1,35 @@
+#!/bin/bash
+#SBATCH -J r7finngen
+#SBATCH -A CWALLACE-SL2-CPU
+#SBATCH --nodes 1
+#SBATCH --ntasks 1
+#SBATCH --time 00:50:00
+#SBATCH --mail-type FAIL
+#SBATCH -p icelake-himem
+#SBATCH --output=./err/%A_%a.err
+shopt -s nullglob
+. /etc/profile.d/modules.sh # Leave this line (enables the module command)
+module purge                # Removes all modules still loaded
+#module load default-impi    # REQUIRED - loads the basic environment
+module load rhel8/default-icl           # REQUIRED - loads the basic environment
+#module load r-4.0.2-gcc-5.4.0-xyx46xb
+export I_MPI_PIN_ORDER=scatter # Adjacent domains have minimal sharing of caches/sockets
+JOBID=$SLURM_JOB_ID
+echo -e "JobID: $JOBID"
+G=$SLURM_ARRAY_TASK_ID ### this is the array variable, you can use it the way you want. In this example I use it to select the gene based on the line number in a file
+
+# Scripts
+# Define the appropriate variables
+urlarray=($(cat r7_urls.txt |tr "\n" " "))
+filenamearray=($(cat r7_names.txt |tr "\n" " "))
+i=$(($G - 1))
+
+url=${urlarray[$i]}
+name=${filenamearray[$i]}
+
+wget -O "$name"_FinnGen_FinnGenR7.tsv.gz "$url" 
+echo "Download finished. Processing the file..."
+zcat "$name"_FinnGen_FinnGenR7.tsv.gz | sed -e '1s/#chrom/CHR38/' -e '1s/pos/BP38/' -e '1s/ref/REF/' -e '1s/alt/ALT/' -e '1s/rsids/SNPID/' -e '1s/pval/P/' -e '1s/beta/BETA/' -e '1s/sebeta/SE/' -e '1s/af_alt/ALT_FREQ/'| grep -F -wf coords.txt | gzip > "$name"_FinnGen_FinnGenR7_1-hg38.tsv.gz
+rm "${filenamearray[$i]}"_FinnGen_FinnGenR7.tsv.gz 
+mv "$name"_FinnGen_FinnGenR7_1-hg38.tsv.gz ~/rds/rds-cew54-basis/01-Workshop/r7finngen/
+echo "Done. File is stored in ~/rds/rds-cew54-basis/01-Workshop/r7finngen/"$name"_FinnGen_FinnGenR7_1-hg38.tsv.gz"

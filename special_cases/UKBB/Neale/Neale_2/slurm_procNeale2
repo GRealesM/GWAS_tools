@@ -1,0 +1,40 @@
+#!/bin/bash
+#SBATCH -J procNeale
+#SBATCH -A CWALLACE-SL2-CPU
+#SBATCH --nodes 1
+#SBATCH --ntasks 1
+#SBATCH --time 00:50:00
+#SBATCH --mail-type FAIL
+#SBATCH -p icelake-himem
+#SBATCH --output=./err/%A_%a.err
+shopt -s nullglob
+. /etc/profile.d/modules.sh # Leave this line (enables the module command)
+module purge                # Removes all modules still loaded
+#module load default-impi    # REQUIRED - loads the basic environment
+module load rhel8/default-icl           # REQUIRED - loads the basic environment
+#module load r-4.0.2-gcc-5.4.0-xyx46xb
+export I_MPI_PIN_ORDER=scatter # Adjacent domains have minimal sharing of caches/sockets
+JOBID=$SLURM_JOB_ID
+echo -e "JobID: $JOBID"
+G=$SLURM_ARRAY_TASK_ID ### this is the array variable, you can use it the way you want. In this example I use it to select the gene based on the line number in a file
+
+# Scripts
+# Define the appropriate variables
+urlarray=($(cat neale2_urls.txt |tr "\n" " "))
+filenamearray=($(cat neale2_names.txt |tr "\n" " "))
+i=$(($G - 1))
+
+url=${urlarray[$i]}
+name=${filenamearray[$i]}
+
+wget -O ds/"$name"-raw.tsv.gz "$url" 
+zcat ds/"$name"-raw.tsv.gz | grep -F -f coords_hg19.txt | gzip > ds/"$name"-ft1.tsv.gz
+echo "Download complete. Reheading..."
+Rscript --vanilla Preprocess_UKBB.R ds/"$name"-ft1.tsv.gz
+echo "Done. Pipelining"
+cd ds/  ## Apparently, our pipeline is not happy to be referred to files not in the directory
+~/rds/rds-cew54-basis/GWAS_tools/01-Pipeline/pipeline_v5.3.2_beta.sh -f "$name"-rh.tsv.gz
+echo "Done! File is in ds/"$name"-hg38.tsv.gz"
+
+
+

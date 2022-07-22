@@ -1,0 +1,19 @@
+# Downloading and filtering Neale UKBB data by SNPs in the HLA basis
+
+Guillermo Reales
+2020-07-27
+
+Cupcake paper came back with reviews (yay!) asking us to demonstrate why Cupcake won't work properly using HLA.
+Olly built a HLA basis and Chris wanted to project UKBB data on this basis to show matches in locations with 
+traits in the basis.
+For that I'll use the HLA basis manifest, and use the scripts I already wrote for downloading and filtering Neale's files to get those of our 11 traits
+
+Our 11 traits are:
+
+20002_1111 - Asthma
+20002_1462 - Crohn's disease
+20002_1661 - Vitiligo
+20002_1463 - Ulcerative colitis
+20002_1464 - Rheumatoid arthritis
+20002_1381 - Systemic Lupus Erythematosus
+20002_1222 - Type 1 diabetes

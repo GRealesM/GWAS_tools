@@ -1,0 +1,63 @@
+#!/bin/bash
+#SBATCH -J proc_PUKBB2
+#SBATCH -A CWALLACE-SL2-CPU
+#SBATCH --nodes 1
+#SBATCH --ntasks 1
+#SBATCH --time 00:15:00
+#SBATCH --mail-type FAIL
+#SBATCH -p icelake-himem
+#SBATCH --output=./err/%A_%a.err
+shopt -s nullglob
+. /etc/profile.d/modules.sh # Leave this line (enables the module command)
+module purge                # Removes all modules still loaded
+#module load default-impi    # REQUIRED - loads the basic environment
+module load rhel8/default-icl           # REQUIRED - loads the basic environment
+#module load r-4.0.2-gcc-5.4.0-xyx46xb
+export I_MPI_PIN_ORDER=scatter # Adjacent domains have minimalAuthors' website, but link is broken sharing of caches/sockets
+JOBID=$SLURM_JOB_ID
+echo -e "JobID: $JOBID"
+G=$SLURM_ARRAY_TASK_ID ### this is the array variable, you can use it the way you want. In this example I use it to select the gene based on the line number in a file
+
+# Scripts
+# Define the appropriate variables
+
+array=(ds/*-ft1.tsv.gz)
+i=$(($G - 1))
+
+name=$(echo ${array[$i]} | sed 's/ds\///' | sed 's/-ft1.tsv.gz//') # Rm directory and termination from name
+echo "Working on $name"
+class=$(grep ""$name"-ft1" files_by_header | awk '{print $2}')
+
+if [[ $class == "meta_hq" ]];
+then 
+    echo "This is "$name", of class "$class"."
+    zcat ds/"$name"-ft1.tsv.gz | sed -e '1s/beta_meta_hq/BETA/' -e '1s/se_meta_hq/SE/' -e '1s/pval_meta_hq/P/' | gzip > ds/"$name"_PanUKBB_PanUKBBR2_1-rh.tsv.gz
+fi
+
+if [[ $class == "meta_nohq" ]];
+then 
+    echo "This is "$name", of class "$class"."
+    zcat ds/"$name"-ft1.tsv.gz | sed -e '1s/beta_meta/BETA/' -e '1s/se_meta/SE/' -e '1s/pval_meta/P/' | gzip > ds/"$name"_PanUKBB_PanUKBBR2_1-rh.tsv.gz
+fi
+
+if [[ $class == "EUR" ]];
+then 
+    echo "This is "$name", of class "$class"."
+    zcat ds/"$name"-ft1.tsv.gz | sed -e '1s/beta_EUR/BETA/' -e '1s/se_EUR/SE/' -e '1s/pval_EUR/P/' | gzip > ds/"$name"_PanUKBB_PanUKBBR2_1-rh.tsv.gz
+fi
+
+if [[ $class == "AFR" ]];
+then 
+    echo "This is "$name", of class "$class"."
+    zcat ds/"$name"-ft1.tsv.gz | sed -e '1s/beta_AFR/BETA/' -e '1s/se_AFR/SE/' -e '1s/pval_AFR/P/' | gzip > ds/"$name"_PanUKBB_PanUKBBR2_1-rh.tsv.gz
+fi
+
+echo "File was "$class" and is in ds/"$name"-rh.tsv.gz."
+
+echo "Pipelining..."
+cd ds/  ## Apparently, our pipeline is not happy to be referred to files not in the directory
+~/rds/rds-cew54-basis/GWAS_tools/01-Pipeline/pipeline_v5.3.2_beta.sh -f "$name"_PanUKBB_PanUKBBR2_1-rh.tsv.gz
+echo "Done! File is in ds/"$name"_PanUKBB_PanUKBBR2_1-hg38.tsv.gz"
+
+
+

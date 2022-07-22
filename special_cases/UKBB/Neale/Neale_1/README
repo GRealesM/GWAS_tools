@@ -1,0 +1,7 @@
+This directory is meant to download and  process all UKBB files of interest.
+
+key19_300k.txt - The pid19 (hg19) column in  snp_manifest_300k_complete.txt with an extra : to be used as a key for grepping.
+
+I downloaded and filtered 20002_* UKBB files by key19_300k using ukbb1.sh, pre-processed them for pipeline using Preprocess_UKBB.R, and pipelined them using pipeline v4.7. Raw, filtered files are in 97-Archive/. Fully processed files are in 02-Processed/
+
+Guillermo Reales, 09/05/2020
