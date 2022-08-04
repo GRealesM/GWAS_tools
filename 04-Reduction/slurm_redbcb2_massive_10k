@@ -1,0 +1,27 @@
+#!/bin/bash
+#SBATCH -J redcb2_10k
+#SBATCH -A CWALLACE-SL2-CPU
+#SBATCH --nodes 1
+#SBATCH --ntasks 8
+#SBATCH --time 00:20:00
+#SBATCH --mail-type FAIL
+#SBATCH -p icelake-himem
+#SBATCH --output=./err/%A_%a.err
+shopt -s nullglob
+. /etc/profile.d/modules.sh # Leave this line (enables the module command)
+module purge                # Removes all modules still loaded
+#module load default-impi    # REQUIRED - loads the basic environment
+module load rhel8/default-icl             # REQUIRED - loads the basic environment
+module load r-4.0.2-gcc-5.4.0-xyx46xb
+export I_MPI_PIN_ORDER=scatter # Adjacent domains have minimal sharing of caches/sockets
+JOBID=$SLURM_JOB_ID
+echo -e "JobID: $JOBID"
+G=$SLURM_ARRAY_TASK_ID ### this is the array variable, you can use it the way you want. In this example I use it to select the gene based on the line number in a file
+F=$(($G - 1 + 10000)) # Zero based array adapted to indexes over 10k
+a=(~/rds/rds-cew54-basis/02-Processed/*-hg38.tsv.gz) # Use all in 02-Processed
+# a=(~/rds/rds-cew54-basis/01-Workshop/r7finngen/*-hg38.tsv.gz) # Reduce FinnGenR7
+#a=(~/rds/rds-cew54-basis/94-UKBB/Neale/Neale_2/ds/*-hg38.tsv.gz) # Reduce Neale
+#a=(~/rds/rds-cew54-basis/94-UKBB/panUKBB/R2/ds/*-hg38.tsv.gz) # Reduce Neale
+fname=${a[$F]}
+
+Rscript --vanilla ~/rds/rds-cew54-basis/GWAS_tools/04-Reduction/Reducing_for_bloodcellbasis_v2.R $fname
