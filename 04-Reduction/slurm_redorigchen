@@ -1,0 +1,21 @@
+#!/bin/bash
+#SBATCH -J redorigchen
+#SBATCH -A CWALLACE-SL2-CPU
+#SBATCH --nodes 1
+#SBATCH --ntasks 15
+#SBATCH --time 00:15:00
+#SBATCH --mail-type FAIL
+#SBATCH -p icelake-himem
+#SBATCH --output=./err/%A_%a.err
+shopt -s nullglob
+. /etc/profile.d/modules.sh # Leave this line (enables the module command)
+module purge                # Removes all modules still loaded
+#module load default-impi    # REQUIRED - loads the basic environment
+module load rhel8/default-icl             # REQUIRED - loads the basic environment
+module load r-4.0.2-gcc-5.4.0-xyx46xb
+export I_MPI_PIN_ORDER=scatter # Adjacent domains have minimal sharing of caches/sockets
+JOBID=$SLURM_JOB_ID
+echo -e "JobID: $JOBID"
+G=$SLURM_ARRAY_TASK_ID ### this is the array variable, you can use it the way you want. In this example I use it to select the gene based on the line number in a file
+
+Rscript --vanilla ~/rds/rds-cew54-basis/GWAS_tools/04-Reduction/Reducing_original_Chen_for_bloodcellbasis_v2.R $G
