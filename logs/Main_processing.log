@@ -1129,5 +1129,11 @@ The step prior to pipelining is to rehead each file appropriately. For that I ex
 Then using this classification, I replaced the right beta, se, and p-value by BETA, SE, P. After choosing and renaming the right estimates for each dataset, I pipelined them (5.3.2_beta). This was done in `slurm_proc_PanUKBBR2`.
 
 
+- IGA_Liu_36369178_1
+
+Last Reviewed: 2022-11-21
+
+Downloaded, manually reheaded (A1 = ALT), and pipelined (v5.3.2). It's a meta-analysis (European, African American, East Asian, Latinxs) without ALT_FREQ, so sdY can't be carried out.
+We'll leave it unadjusted, for now.
 
 

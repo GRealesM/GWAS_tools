@@ -32,7 +32,7 @@ i <- commandArgs(trailingOnly=TRUE)
 #metadata <- read_sheet("https://docs.google.com/spreadsheets/d/16B4ANehcS4psdAFReTBQUJLYXuf5_RrpmjSPaASa2Nw/edit?usp=sharing", sheet = 1)[,c("File_ID", "N0", "N1")]
 #metadata <- data.table(metadata)
 metapath <- "~/rds/rds-cew54-basis/03-Bases/Metadata/"
-metafiles <- dir(metapah, pattern = "Metadata")
+metafiles <- dir(metapath, pattern = "Metadata")
 metaname <- metafiles[length(metafiles)] # Pick the most recent
 
 metadata <- fread(paste0(metapath, metaname))

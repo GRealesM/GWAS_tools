@@ -34,10 +34,22 @@ SNP.manifest <- SNP.manifest[, .(CHR38, BP38, REF, ALT)]
 # This time we'll use a different strategy, involving array jobs.
 args <- commandArgs(trailingOnly = TRUE) # Full path to the file
 
-name <- strsplit(args, "\\/|-")[[1]] %>% .[length(.) - 1]
+# We changed the strategy here. If we have many files, we can submit an array job and process each of them individually, we just need to supply the name of the file we want to reduce
+if(length(args) == 1){
+	message("You supplied a file. Processing that file")
+	files  <- args
+} else {
+	message("Processing all (*-hg38.tsv.gz) files")
+        files  <- dir(pattern="*-hg38.tsv.gz") # If we have only a few files, by not supplying any argument we can process them all in one go.
+}
+
+
+for(i in files){
+
+name <- strsplit(i, split = "-")[[1]][1]
 newname <- paste0(name, "-ft.tsv")
-message("Reducing ", name, " in ", args, " for Blood cell basis 2.")
-input <- fread(args, tmpdir = "tmp")
+message("Reducing ", name, " for Blood cell basis v2/v3.")
+input <- fread(i, tmpdir = "tmp")
 
 mincold <- c("CHR38", "BP38", "REF", "ALT", "BETA", "SE", "P")
 input <- input[, ..mincold]
@@ -48,3 +60,4 @@ if(length(dups) > 0) M <- M[!pid %in% dups] # Remove dups
 fwrite(M, paste0("~/rds/rds-cew54-basis/03-Bases/cell_basis_v2/reduced_datasets/",newname), sep = "\t")
 cat("Done!\n")
 
+}
