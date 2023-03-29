@@ -1136,4 +1136,10 @@ Last Reviewed: 2022-11-21
 Downloaded, manually reheaded (A1 = ALT), and pipelined (v5.3.2). It's a meta-analysis (European, African American, East Asian, Latinxs) without ALT_FREQ, so sdY can't be carried out.
 We'll leave it unadjusted, for now.
 
+- Orru
+
+Last Reviewed: 2023-03-17
+
+Thirteen selected lymphocyte datasets. I downloaded them from GWAS catalog, harmonised version, so not much work to do, simply renamed columns and pipelined.
+
 

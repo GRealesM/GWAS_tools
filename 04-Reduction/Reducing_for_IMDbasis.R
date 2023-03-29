@@ -54,7 +54,10 @@ if(length(args) == 1){
 
 for(i in files){
 
-name <- strsplit(i, split = "-")[[1]][1]
+cpath <- strsplit(i, split ="\\/")[[1]] # In case a path is supplied
+cpath <- cpath[length(cpath)]
+
+name <- strsplit(cpath, split = "-")[[1]][1]
 newname <- paste0(name, "-ft.tsv")
 message("Reducing ", name, " for IMD basis.")
 input <- fread(i, tmpdir = "tmp")
@@ -64,6 +67,7 @@ input <- input[, ..mincold]
 M <- g.align(input, SNP.manifest)
 dups <- M[duplicated(pid), pid]
 if(length(dups) > 0) M <- M[!pid %in% dups] # Remove dups
+setnames(M, "pid", "pid38") # We need pid column to be named pid38
 
 fwrite(M, paste0("~/rds/rds-cew54-basis/03-Bases/IMD_basis/reduced_datasets/",newname), sep = "\t")
 cat("Done!\n")
