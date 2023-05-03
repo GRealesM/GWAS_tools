@@ -1152,4 +1152,9 @@ A juvenile dermatomyositis dataset in hg19 lacking reference allele. I processed
 This file only has ~174k SNPs (only 185 match with IMD basis). We'll keep it nonetheless for its interest for our study.
 Scripts for processing can be found at ../special_cases/Deakin_2022.{sh,R}.
 
+- PAPS_Casares_up_1
 
+Last Reviewed: 2023-05-03
+
+A PAPS dataset in hg38. A1/A2 allegedly ALT/REF. Needed to get the A2 allele from the SNP column.
+Lacked BETA/SE but had OR and P. Renamed columns and processed using pipeline 5.3.2_beta.
