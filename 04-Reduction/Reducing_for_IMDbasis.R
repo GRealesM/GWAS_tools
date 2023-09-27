@@ -2,7 +2,7 @@
 ## DATASET FILTERING BY THE IMD MANIFEST
 #########################################
 
-# Introduction: This code is meant to pre-process our big files (located at 04-Liftovered/), filtering them by the SNPs in the SNP manifest, to make them more manageable prior to project them onto the IMDbasis
+# Introduction: This code is meant to pre-process our big files (located at 02-Liftovered/), filtering them by the SNPs in the SNP manifest, to make them more manageable prior to project them onto the IMDbasis
 
 ##############################################
 ### LOAD LIBRARIES AND SET REQUIRED FUNCTIONS
@@ -44,7 +44,7 @@ args <- commandArgs(trailingOnly = TRUE) # Full path to the file
 
 # We changed the strategy here. If we have many files, we can submit an array job and process each of them individually, we just need to supply the name of the file we want to reduce
 if(length(args) == 1){
-	message("You supplied a file. Processing that file")
+	message("You supplied a file. Processing that file: ", args)
 	files  <- args
 } else {
 	message("Processing all (*-hg38.tsv.gz) files")

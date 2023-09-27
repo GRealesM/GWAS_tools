@@ -1158,3 +1158,14 @@ Last Reviewed: 2023-05-03
 
 A PAPS dataset in hg38. A1/A2 allegedly ALT/REF. Needed to get the A2 allele from the SNP column.
 Lacked BETA/SE but had OR and P. Renamed columns and processed using pipeline 5.3.2_beta.
+
+
+- Zhao projeins 
+
+Last Reviewed: 2023-09-27
+
+91 pQTL GWAS datasets were downloaded (slurm_dw_zhao) from GWAS catalog. Needed to rename some columns (slurm_proc_zhao) and then pipelined using 
+pipeline 5.3.2_beta. No issues. Upon inspection, effect sizes seemed to be already normalised (ie. computed sdY for selected datasets was ~ 1).
+So no need to do anything else.
+
+
