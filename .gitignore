@@ -1,4 +1,3 @@
 liftOver
 04-Reduction/err/*
-01-Pipeline/*.chain.gz
-tmp/
+*.chain.gz
